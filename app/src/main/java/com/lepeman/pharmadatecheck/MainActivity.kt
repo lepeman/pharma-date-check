@@ -5,46 +5,33 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Color.Companion.White
-import androidx.compose.ui.tooling.preview.Preview
 import com.lepeman.pharmadatecheck.ui.theme.PharmaDateCheckTheme
 
+/**
+ * Punto de entrada principal de la aplicación PharmaDateCheck.
+ *
+ * Esta actividad configura el entorno visual inicial, habilita el diseño de borde a borde (edge-to-edge)
+ * e inicializa la interfaz de usuario utilizando Jetpack Compose.
+ */
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Habilita la visualización de borde a borde para aprovechar toda la pantalla
         enableEdgeToEdge()
+
         setContent {
+            // Aplica el tema personalizado de la aplicación definido en la capa de UI
             PharmaDateCheckTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
+                // Inicia la función principal de navegación y composición de la App
+                Surface(
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    MainApp()
                 }
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier,
-        color = Color.White
-    )
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFF0F1117)
-@Composable
-fun GreetingPreview() {
-    PharmaDateCheckTheme {
-        Greeting("Android")
     }
 }
