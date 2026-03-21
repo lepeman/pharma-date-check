@@ -8,5 +8,5 @@ import androidx.navigation.compose.rememberNavController
 
 @Composable
 fun MainApp(navController: NavHostController = rememberNavController()) {
-
+    PharmaNavHost(navController = navController)
 }
