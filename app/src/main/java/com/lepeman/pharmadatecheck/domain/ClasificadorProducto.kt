@@ -11,7 +11,7 @@ data class ResultadoClasificacion(
     val diasRestantes: Int,
     val periodoRestante: String,
     val diasAnticipacionCanje: Int,
-    val fechaLimiteCanje: LocalDate?
+    val fechaLimiteCanje: LocalDate?,
     val nombreLaboratorio: String
 )
 
@@ -50,6 +50,23 @@ class ClasificadorProducto {
             )
         }
 
-        val fechaLimiteCanje = fechaVencimiento.minusDays(politica.diasAnticipacionCanje.toLong)
+        val fechaLimiteCanje = fechaVencimiento.minusDays(145)
+
+        val clasificacion = when {
+            fechaActual >= fechaVencimiento -> Clasificacion.VENCIDO
+            fechaActual >= fechaLimiteCanje -> Clasificacion.CANJEABLE
+            else                            -> Clasificacion.VIGENTE
+        }
+
+        return ResultadoClasificacion(
+            producto = producto,
+            fechaVencimiento = fechaVencimiento,
+            clasificacion = clasificacion,
+            diasRestantes = diasRestantes,
+            periodoRestante = periodoRestante,
+            diasAnticipacionCanje = 56,
+            fechaLimiteCanje = fechaLimiteCanje,
+            nombreLaboratorio = nombreLaboratorio
+        )
     }
 }

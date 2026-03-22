@@ -8,6 +8,7 @@ import com.lepeman.pharmadatecheck.data.repositories.PoliticaCanjeRepository
 import com.lepeman.pharmadatecheck.data.repositories.ProductoRepository
 import com.lepeman.pharmadatecheck.data.repositories.ProductoRevisadoRepository
 import com.lepeman.pharmadatecheck.data.repositories.SesionRevisionRepository
+import com.lepeman.pharmadatecheck.domain.ResultadoClasificacion
 
 class ScanViewModel(
     private val auxiliarRepository: AuxiliarRepository,

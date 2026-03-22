@@ -9,9 +9,9 @@ import com.lepeman.pharmadatecheck.ui.scan.ScanDestination
 import com.lepeman.pharmadatecheck.ui.scan.ScanScreen
 
 @Composable
-fun PharmaNavHot(
+fun PharmaNavHost(
     navController: NavHostController,
-    modifier: Modifier
+    modifier: Modifier = Modifier
 ) {
     NavHost(
         navController = navController,
@@ -19,7 +19,9 @@ fun PharmaNavHot(
         modifier = modifier
     ) {
         composable(route = ScanDestination.route) {
-            ScanScreen()
+            ScanScreen(
+                modifier = Modifier
+            )
         }
     }
 }

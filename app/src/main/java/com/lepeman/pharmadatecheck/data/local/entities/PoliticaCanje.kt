@@ -1,6 +1,9 @@
 package com.lepeman.pharmadatecheck.data.local.entities
 
 import androidx.room.Entity
+import androidx.room.ForeignKey
+import androidx.room.ForeignKey.Companion.CASCADE
+import androidx.room.Index
 import androidx.room.PrimaryKey
 import java.time.LocalDate
 
@@ -15,7 +18,26 @@ import java.time.LocalDate
  * @property mesDos Fecha límite o hito 2 para la política de canje.
  * @property mesTres Fecha límite o hito 3 para la política de canje.
  */
-@Entity(tableName = "politicas_canje")
+@Entity(
+    tableName = "politicas_canje",
+    foreignKeys = [
+        ForeignKey(
+            entity = Empresa::class,
+            parentColumns = ["id"],
+            childColumns = ["empresaId"],
+            onDelete = ForeignKey.CASCADE
+        ),
+        ForeignKey(
+            entity = Laboratorio::class,
+            parentColumns = ["id"],
+            childColumns = ["laboratorioId"],
+            onDelete = ForeignKey.CASCADE
+        )
+    ],
+    indices = [
+        Index("empresaId"),
+        Index("laboratorioId")
+    ])
 data class PoliticaCanje(
     @PrimaryKey(autoGenerate = true)
     val id: Int,
