@@ -32,8 +32,8 @@ interface AppContainer {
     val politicaCanjeRepository: PoliticaCanjeRepository
     
     /** Repositorio para la gestión de productos revisados. */
-    val productoRevisado: ProductoRevisadoRepository
+    val productoRevisadoRepository: ProductoRevisadoRepository
     
     /** Repositorio para la gestión de las sesiones de revisión. */
-    val sesionRepository: SesionRevisionRepository
+    val sesionRevisionRepository: SesionRevisionRepository
 }

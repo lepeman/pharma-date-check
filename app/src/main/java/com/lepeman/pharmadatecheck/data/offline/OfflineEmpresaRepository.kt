@@ -19,6 +19,11 @@ class OfflineEmpresaRepository(private val empresaDao: EmpresaDao) : EmpresaRepo
     override fun obtenerTodas(): Flow<List<Empresa>> = empresaDao.obtenerTodas()
 
     /**
+     * Obtiene el nombre de la empresa por medio del Id
+     */
+    override fun obtenerNombreEmpresa(id: Int): String = empresaDao.obtenerNombreEmpresa(id)
+
+    /**
      * Actualiza la información de una empresa en la base de datos local.
      */
     override suspend fun actualizar(empresa: Empresa) = empresaDao.actualizar(empresa)

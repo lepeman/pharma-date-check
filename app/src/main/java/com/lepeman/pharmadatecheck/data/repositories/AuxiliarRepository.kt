@@ -7,6 +7,10 @@ interface AuxiliarRepository {
 
     fun obtenerTodosStream(): Flow<List<Auxiliar>>
 
+    suspend fun obtenerAuxiliarPorId(id: Int): Auxiliar?
+
+    suspend fun obtenerAuxiliarPorRut(rut: String): Auxiliar?
+
     suspend fun actualizarStream(auxiliar: Auxiliar)
 
     suspend fun insertar(auxiliar: Auxiliar)

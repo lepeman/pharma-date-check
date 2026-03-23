@@ -12,7 +12,7 @@ import androidx.room.PrimaryKey
  */
 @Entity(tableName = "auxiliares")
 data class Auxiliar(
-    @PrimaryKey(autoGenerate = true)
+    @PrimaryKey
     val id: Int,
     val nombreAuxiliar: String,
     val rutAuxiliar: String

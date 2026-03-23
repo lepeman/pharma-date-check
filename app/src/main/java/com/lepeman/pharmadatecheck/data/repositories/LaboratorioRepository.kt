@@ -7,6 +7,8 @@ interface LaboratorioRepository {
 
     fun obtenerTodos(): Flow<List<Laboratorio>>
 
+    fun obtenerNombrePorId(id: Int): String
+
     suspend fun actualizar(laboratorio: Laboratorio)
 
     suspend fun insertar(laboratorio: Laboratorio)

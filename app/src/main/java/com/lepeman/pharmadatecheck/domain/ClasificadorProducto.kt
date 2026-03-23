@@ -3,16 +3,12 @@ package com.lepeman.pharmadatecheck.domain
 import com.lepeman.pharmadatecheck.data.local.entities.PoliticaCanje
 import com.lepeman.pharmadatecheck.data.local.entities.Producto
 import java.time.LocalDate
+import java.time.YearMonth
 
 data class ResultadoClasificacion(
     val producto: Producto,
     val fechaVencimiento: LocalDate,
     val clasificacion: Clasificacion,
-    val diasRestantes: Int,
-    val periodoRestante: String,
-    val diasAnticipacionCanje: Int,
-    val fechaLimiteCanje: LocalDate?,
-    val nombreLaboratorio: String
 )
 
 enum class Clasificacion {
@@ -21,16 +17,13 @@ enum class Clasificacion {
     VENCIDO
 }
 
-class ClasificadorProducto {
+object ClasificadorProducto {
     fun clasificar(
         producto: Producto,
         fechaVencimiento: LocalDate,
         politica: PoliticaCanje?,
-        nombreLaboratorio: String,
         fechaActual: LocalDate = LocalDate.now()
     ): ResultadoClasificacion {
-        val diasRestantes = fechaActual.until(fechaVencimiento).days
-        val periodoRestante = "${diasRestantes} días"
 
         if (politica == null) {
             val clasificacion = if (fechaActual >= fechaVencimiento) {
@@ -41,32 +34,33 @@ class ClasificadorProducto {
             return ResultadoClasificacion(
                 producto = producto,
                 fechaVencimiento = fechaVencimiento,
-                clasificacion = clasificacion,
-                diasRestantes = diasRestantes,
-                periodoRestante = periodoRestante,
-                diasAnticipacionCanje = 0,
-                fechaLimiteCanje = null,
-                nombreLaboratorio = nombreLaboratorio
+                clasificacion = clasificacion
             )
         }
 
-        val fechaLimiteCanje = fechaVencimiento.minusDays(145)
-
-        val clasificacion = when {
-            fechaActual >= fechaVencimiento -> Clasificacion.VENCIDO
-            fechaActual >= fechaLimiteCanje -> Clasificacion.CANJEABLE
-            else                            -> Clasificacion.VIGENTE
+        // Producto no sujeto a vencimiento
+        if (!politica.vencimiento) {
+            return ResultadoClasificacion(producto, fechaVencimiento, Clasificacion.VIGENTE)
         }
 
-        return ResultadoClasificacion(
-            producto = producto,
-            fechaVencimiento = fechaVencimiento,
-            clasificacion = clasificacion,
-            diasRestantes = diasRestantes,
-            periodoRestante = periodoRestante,
-            diasAnticipacionCanje = 56,
-            fechaLimiteCanje = fechaLimiteCanje,
-            nombreLaboratorio = nombreLaboratorio
+        // Producto vencido — pasa a merma
+        if (fechaActual >= fechaVencimiento) {
+            return ResultadoClasificacion(producto, fechaVencimiento, Clasificacion.VENCIDO)
+        }
+
+        // Verificar si la fecha de vencimiento cae en algún mes de la política
+        val periodoVencimiento = YearMonth.from(fechaVencimiento)
+        val mesesPolitica = listOfNotNull(
+            politica.mesUno?.let { YearMonth.from(it) },
+            politica.mesDos?.let { YearMonth.from(it) },
+            politica.mesTres?.let { YearMonth.from(it) }
         )
+
+        val clasificacion = if (periodoVencimiento in mesesPolitica)
+            Clasificacion.CANJEABLE
+        else
+            Clasificacion.VIGENTE
+
+        return ResultadoClasificacion(producto, fechaVencimiento, clasificacion)
     }
 }

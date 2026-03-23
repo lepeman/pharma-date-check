@@ -7,10 +7,16 @@ interface PoliticaCanjeRepository {
 
     fun obtenerTodas(): Flow<List<PoliticaCanje>>
 
+    suspend fun obtenerPoliticaPorLaboratorio(laboratorioId: Int): PoliticaCanje
+
     suspend fun actualizar(politicaCanje: PoliticaCanje)
 
     suspend fun insertar(politicaCanje: PoliticaCanje)
 
+    suspend fun prepoblarSiVacio()
+
     suspend fun eliminar(politicaCanje: PoliticaCanje)
+
+    suspend fun eliminarPorId(id: Int)
 
 }

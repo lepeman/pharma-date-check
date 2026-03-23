@@ -19,6 +19,16 @@ class OfflineAuxiliarRepository(private val auxiliarDao: AuxiliarDao) : Auxiliar
     override fun obtenerTodosStream(): Flow<List<Auxiliar>> = auxiliarDao.obtenerTodos()
 
     /**
+     * Obtiene un auxiliar por medio del Id
+     */
+    override suspend fun obtenerAuxiliarPorId(id: Int): Auxiliar? = auxiliarDao.obtenerAuxiliar(id)
+
+    /**
+     * Obtiene un auxiliar por medio del rut
+     */
+    override suspend fun obtenerAuxiliarPorRut(rut: String): Auxiliar? = auxiliarDao.obtenerAuxiliarPorRut(rut)
+
+    /**
      * Actualiza la información de un auxiliar en la base de datos local.
      */
     override suspend fun actualizarStream(auxiliar: Auxiliar) = auxiliarDao.actualizar(auxiliar)

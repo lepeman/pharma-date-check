@@ -7,6 +7,8 @@ interface ProductoRepository {
 
     fun obtenerTodos(): Flow<List<Producto>>
 
+    fun buscarPorEAN13(EAN13: String): Producto?
+
     suspend fun actualizar(producto: Producto)
 
     suspend fun insertar(producto: Producto)

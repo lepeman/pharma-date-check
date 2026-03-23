@@ -19,6 +19,11 @@ class OfflineLaboratorioRepository(private val laboratorioDao: LaboratorioDao) :
     override fun obtenerTodos(): Flow<List<Laboratorio>> = laboratorioDao.obtenerTodos()
 
     /**
+     * Obtiene un String correspondiente al nombre del laboratorio por medio del Id
+     */
+    override fun obtenerNombrePorId(id: Int): String = laboratorioDao.obtenerNombreLaboratorio(id)
+
+    /**
      * Actualiza la información de un laboratorio en la base de datos local.
      */
     override suspend fun actualizar(laboratorio: Laboratorio) = laboratorioDao.actualizar(laboratorio)

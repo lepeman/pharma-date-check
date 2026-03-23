@@ -5,6 +5,7 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import androidx.sqlite.db.SupportSQLiteDatabase
 import com.lepeman.pharmadatecheck.data.local.dao.AuxiliarDao
 import com.lepeman.pharmadatecheck.data.local.dao.EmpresaDao
 import com.lepeman.pharmadatecheck.data.local.dao.LaboratorioDao
@@ -19,6 +20,9 @@ import com.lepeman.pharmadatecheck.data.local.entities.PoliticaCanje
 import com.lepeman.pharmadatecheck.data.local.entities.Producto
 import com.lepeman.pharmadatecheck.data.local.entities.ProductoRevisado
 import com.lepeman.pharmadatecheck.data.local.entities.SesionRevision
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 /**
  * Base de datos principal de la aplicación utilizando Room.
@@ -66,10 +70,72 @@ abstract class AppDatabase : RoomDatabase() {
                 )
                     // Política de migración destructiva (opcional: borrar y recrear si cambia la versión)
                     // .fallbackToDestructiveMigration()
+                    .addCallback(AppDatabaseCallback(context))
                     .build()
                 INSTANCE = instance
                 instance
             }
+        }
+
+        private class AppDatabaseCallback(
+            private val context:Context
+        ) : RoomDatabase.Callback() {
+            override fun onCreate(db: SupportSQLiteDatabase) {
+                super.onCreate(db)
+
+                INSTANCE?.let { database ->
+                    CoroutineScope(Dispatchers.IO).launch {
+                        prepoblarDatos(database)
+                    }
+                }
+            }
+
+            suspend fun prepoblarDatos(db: AppDatabase) {
+                val laboratorioDao = db.laboratorioDao()
+                val listaLaboratorios = listOf(
+                    Laboratorio(id = 1, nombre = "CHILE RECETARIO"),
+                    Laboratorio(id = 2, nombre = "CHILEMARCAS"),
+                    Laboratorio(id = 3, nombre = "BAYER POPULAR"),
+                    Laboratorio(id = 4, nombre = "RECALCINE"),
+                    Laboratorio(id = 5, nombre = "ASSISTANCE")
+                )
+
+                laboratorioDao.insertarTodosLosLaboratorios(listaLaboratorios)
+
+                val empresaDao = db.empresaDao()
+                val listaEmpresas = listOf(
+                    Empresa(id = 1, razonSocial="PHARMATRADE S.A."),
+                    Empresa(id = 2, razonSocial="BAYER S.A."),
+                    Empresa(id = 3, razonSocial="ABBOT LABORATORIES DE CHILE S.A."),
+                    Empresa(id = 4, razonSocial="LABORATORIOS RECALCINE S.A."),
+                    Empresa(id = 5, razonSocial="SOCIEDAD COMERCIAL ASSITANCE OTC CHILE LTDA."),
+                    Empresa(id = 6, razonSocial="LABORATORIOS SAVAL S.A."),
+                    Empresa(id = 7, razonSocial="ASTRAZENECA S.A."),
+                    Empresa(id = 8, razonSocial="NOVARTIS CHILE S.A."),
+                    Empresa(id = 9, razonSocial="NOVOFARMA SERVICE S.A."),
+                    Empresa(id = 10, razonSocial="MERCK S.A."),
+                    Empresa(id = 11, razonSocial="CHEMOPHARMA S.A."),
+                    Empresa(id = 12, razonSocial="INSTITUTO SANITAS S.A.")
+                )
+                
+                empresaDao.insertarTodasLasEmpresas(listaEmpresas)
+
+                val auxiliarDao = db.auxiliarDao()
+                val listaAuxiliares = listOf(
+                    Auxiliar(1, "Juan Pérez", "12.345.678-9"),
+                    Auxiliar(2, "María González", "15.672.341-k"),
+                    Auxiliar(3, "Carlos Muñoz", "18.901.234-5"),
+                    Auxiliar(4, "Ana Silva", "10.432.876-7"),
+                    Auxiliar(5, "Roberto Tapia", "14.556.789-0"),
+                    Auxiliar(6, "Elena Morales", "17.223.445-6"),
+                    Auxiliar(7, "Pedro Soto", "9.876.543-2"),
+                    Auxiliar(8, "Lucía Herrera", "20.112.334-1")
+                )
+
+                auxiliarDao.insertarTodosLosAuxiliares(listaAuxiliares)
+                
+            }
+
         }
     }
 }

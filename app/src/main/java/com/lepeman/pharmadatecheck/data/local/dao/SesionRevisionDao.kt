@@ -3,6 +3,7 @@ package com.lepeman.pharmadatecheck.data.local.dao
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import com.lepeman.pharmadatecheck.data.local.entities.SesionRevision
@@ -20,6 +21,12 @@ interface SesionRevisionDao {
     fun obtenerTodas(): Flow<List<SesionRevision>>
 
     /**
+     * Se obtiene una sesión por medio del Id
+     */
+    @Query("SELECT * FROM sesiones_revision WHERE id = :id")
+    suspend fun buscarPorId(id: Int): SesionRevision?
+
+    /**
      * Actualiza la información de una sesión de revisión.
      */
     @Update
@@ -28,8 +35,8 @@ interface SesionRevisionDao {
     /**
      * Registra una nueva sesión de revisión.
      */
-    @Insert
-    suspend fun insertar(sesionRevision: SesionRevision)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertar(sesionRevision: SesionRevision): Long
 
     /**
      * Elimina una sesión de revisión de la base de datos.

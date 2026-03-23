@@ -66,14 +66,14 @@ class AppDataContainer(private val context: Context): AppContainer {
     /**
      * Repositorio para la gestión de los productos que ya han sido revisados.
      */
-    override val productoRevisado: ProductoRevisadoRepository by lazy {
+    override val productoRevisadoRepository: ProductoRevisadoRepository by lazy {
         OfflineProductoRevisadoRepository(AppDatabase.getDatabase(context).productoRevisadoDao())
     }
 
     /**
      * Repositorio para la gestión de las sesiones de revisión de inventario.
      */
-    override val sesionRepository: SesionRevisionRepository by lazy {
+    override val sesionRevisionRepository: SesionRevisionRepository by lazy {
         OfflineSesionRevisionRepository(AppDatabase.getDatabase(context).sesionRevisionDao())
     }
 

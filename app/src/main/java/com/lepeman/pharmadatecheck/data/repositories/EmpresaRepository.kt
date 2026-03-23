@@ -7,6 +7,8 @@ interface EmpresaRepository {
 
     fun obtenerTodas(): Flow<List<Empresa>>
 
+    fun obtenerNombreEmpresa(id: Int): String
+
     suspend fun actualizar(empresa: Empresa)
 
     suspend fun insertar(empresa: Empresa)

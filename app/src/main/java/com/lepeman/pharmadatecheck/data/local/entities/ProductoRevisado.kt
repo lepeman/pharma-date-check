@@ -18,7 +18,7 @@ data class ProductoRevisado(
     @PrimaryKey(autoGenerate = true)
     val id: Int,
     val sesionId: Int,
-    val productoId: Int,
+    val codigoEAN13: String,
     val clasificacion: String,
     val timestamp: LocalDateTime
 )

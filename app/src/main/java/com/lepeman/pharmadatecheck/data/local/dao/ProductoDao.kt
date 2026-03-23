@@ -20,6 +20,12 @@ interface ProductoDao {
     fun obtenerTodos(): Flow<List<Producto>>
 
     /**
+     * Se obtiene un producto por medio de su código EAN13
+     */
+    @Query("SELECT * FROM productos WHERE codigoEAN13 = :EAN13")
+    fun buscarPorEAN13(EAN13: String): Producto?
+
+    /**
      * Actualiza la información de un producto.
      */
     @Update

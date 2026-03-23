@@ -11,7 +11,7 @@ import androidx.room.PrimaryKey
  */
 @Entity(tableName = "empresas")
 data class Empresa(
-    @PrimaryKey(autoGenerate = true)
-    val id: Int = 0,
+    @PrimaryKey
+    val id: Int,
     val razonSocial: String
 )

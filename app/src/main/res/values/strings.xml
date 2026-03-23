@@ -1,3 +1,18 @@
 <resources>
     <string name="app_name">PharmaDateCheck</string>
+    <string name="canje">Políticas de Canje</string>
+    <string name="title_politicas">Políticas de Canje\n</string>
+    <string name="descripcion_canje">Adminsitre las condiciones de canje por laboratorio</string>
+    <string name="sin_politicas">No hay políticas de canje registradas.</string>
+    <string name="cargar_laboratorios">Cargar laboratorios frecuentes</string>
+    <string name="nueva_politica">Nueva Política</string>
+    <string name="inicio_sesion">Iniciar sesión de revisión</string>
+    <string name="campo_fecha_vencimiento">Fecha de vencimiento</string>
+    <string name="indicaciones">Ingrese la fecha impresa en el empaque</string>
+    <string name="scan_screen">Escaneo</string>
+    <string name="historial_screen">Historial</string>
+    <string name="canje_screen">Canje</string>
+    <string name="config_screen">Config</string>
+    <string name="historial">Pantalla Historial</string>
+    <string name="config">Config</string>
 </resources>
