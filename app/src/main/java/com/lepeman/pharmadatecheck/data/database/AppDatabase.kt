@@ -122,14 +122,15 @@ abstract class AppDatabase : RoomDatabase() {
 
                 val auxiliarDao = db.auxiliarDao()
                 val listaAuxiliares = listOf(
-                    Auxiliar(1, "Juan Pérez", "12.345.678-9"),
-                    Auxiliar(2, "María González", "15.672.341-k"),
-                    Auxiliar(3, "Carlos Muñoz", "18.901.234-5"),
-                    Auxiliar(4, "Ana Silva", "10.432.876-7"),
-                    Auxiliar(5, "Roberto Tapia", "14.556.789-0"),
-                    Auxiliar(6, "Elena Morales", "17.223.445-6"),
-                    Auxiliar(7, "Pedro Soto", "9.876.543-2"),
-                    Auxiliar(8, "Lucía Herrera", "20.112.334-1")
+                    Auxiliar(1, "Juan Pérez", "123456789"),
+                    Auxiliar(2, "María González", "15672341k"),
+                    Auxiliar(3, "Carlos Muñoz", "189012345"),
+                    Auxiliar(4, "Ana Silva", "104328767"),
+                    Auxiliar(5, "Roberto Tapia", "145567890"),
+                    Auxiliar(6, "Elena Morales", "172234456"),
+                    Auxiliar(7, "Pedro Soto", "98765432"),
+                    Auxiliar(8, "Lucía Herrera", "201123341"),
+                    Auxiliar(9, "Luis Ortega", "151748309")
                 )
 
                 auxiliarDao.insertarTodosLosAuxiliares(listaAuxiliares)

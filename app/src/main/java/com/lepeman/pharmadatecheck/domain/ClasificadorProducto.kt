@@ -7,6 +7,7 @@ import java.time.YearMonth
 
 data class ResultadoClasificacion(
     val producto: Producto,
+    val nombreLaboratorio: String,
     val fechaVencimiento: LocalDate,
     val clasificacion: Clasificacion,
 )
@@ -20,6 +21,7 @@ enum class Clasificacion {
 object ClasificadorProducto {
     fun clasificar(
         producto: Producto,
+        nombreLaboratorio: String,
         fechaVencimiento: LocalDate,
         politica: PoliticaCanje?,
         fechaActual: LocalDate = LocalDate.now()
@@ -33,6 +35,7 @@ object ClasificadorProducto {
             }
             return ResultadoClasificacion(
                 producto = producto,
+                nombreLaboratorio = nombreLaboratorio,
                 fechaVencimiento = fechaVencimiento,
                 clasificacion = clasificacion
             )
@@ -40,12 +43,12 @@ object ClasificadorProducto {
 
         // Producto no sujeto a vencimiento
         if (!politica.vencimiento) {
-            return ResultadoClasificacion(producto, fechaVencimiento, Clasificacion.VIGENTE)
+            return ResultadoClasificacion(producto, nombreLaboratorio,fechaVencimiento, Clasificacion.VIGENTE)
         }
 
         // Producto vencido — pasa a merma
         if (fechaActual >= fechaVencimiento) {
-            return ResultadoClasificacion(producto, fechaVencimiento, Clasificacion.VENCIDO)
+            return ResultadoClasificacion(producto, nombreLaboratorio,fechaVencimiento, Clasificacion.VENCIDO)
         }
 
         // Verificar si la fecha de vencimiento cae en algún mes de la política
@@ -61,6 +64,6 @@ object ClasificadorProducto {
         else
             Clasificacion.VIGENTE
 
-        return ResultadoClasificacion(producto, fechaVencimiento, clasificacion)
+        return ResultadoClasificacion(producto, nombreLaboratorio, fechaVencimiento, clasificacion)
     }
 }

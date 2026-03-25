@@ -75,7 +75,7 @@ class CanjeViewModel(
     fun abrirFormularioEdicion(politica: PoliticaCanje) {
         _formulario.value = FormularioState.Visible(
             politica = politica,
-            nombreLaboratorio = laboratorioRepository.obtenerNombrePorId(politica.laboratorioId),
+            nombreLaboratorio = laboratorioRepository.obtenerNombrePorId(politica.laboratorioId) ?: "Laboratorio desconocido",
             nombreEmpresa = empresaRepository.obtenerNombreEmpresa(politica.empresaId),
             vencimiento = if (politica.vencimiento) "SI" else "NO",
             fechaUno = politica.mesUno.toFormatoFormulario(),

@@ -21,7 +21,7 @@ class OfflineProductoRepository(private val productoDao: ProductoDao) : Producto
     /**
      * Se obtiene un producto por medio del código EAN13
      */
-    override fun buscarPorEAN13(EAN13: String): Producto? = productoDao.buscarPorEAN13(EAN13)
+    override suspend fun buscarPorEAN13(EAN13: String): Producto? = productoDao.buscarPorEAN13(EAN13)
 
     /**
      * Actualiza la información de un producto en la base de datos local.

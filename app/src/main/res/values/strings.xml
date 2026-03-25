@@ -15,4 +15,6 @@
     <string name="config_screen">Config</string>
     <string name="historial">Pantalla Historial</string>
     <string name="config">Config</string>
+    <string name="descripcion_inicio_sesion">Ingrese su nombre para registrar la sesión</string>
+    <string name="producto_no_encontrado">Producto no encontrado en la base de datos.\\nVerifique el código EAN-13.</string>
 </resources>

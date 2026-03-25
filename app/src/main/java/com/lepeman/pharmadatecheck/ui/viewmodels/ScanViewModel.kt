@@ -72,7 +72,7 @@ class ScanViewModel(
         viewModelScope.launch {
             _sesionUiState.value = SesionUiState.Cargando
             val auxiliar = auxiliarRepository.obtenerAuxiliarPorRut(rut)
-            Log.d("LEPEMAN_2", if (auxiliar != null) "ENCONTRADO" else "NO ENCONTRADO")
+
             if (auxiliar == null) {
                 _sesionUiState.value = SesionUiState.Error("RUT no encontrado. Verifique su código.")
                 return@launch
@@ -120,7 +120,27 @@ class ScanViewModel(
     }
 
     private fun procesarEAN13(ean13: String) {
+        viewModelScope.launch {
+            _scanUiState.value = ScanUiState.Cargando
 
+            val producto = productoRepository.buscarPorEAN13(ean13)
+
+            if (producto == null) {
+                _scanUiState.value = ScanUiState.ProductoNoEncontrado
+                return@launch
+            }
+
+            val laboratorio = laboratorioRepository.obtenerNombrePorId(producto.laboratorioId)
+
+            _scanUiState.value = ScanUiState.Resultado(
+                ResultadoClasificacion(
+                    producto = producto,
+                    nombreLaboratorio = laboratorio ?: "Laboratorio desconocido",
+                    fechaVencimiento = LocalDate.now(),
+                    clasificacion = Clasificacion.VIGENTE
+                )
+            )
+        }
     }
 
     fun confirmarFechaYClasificar(ean13: String, fechaVencimiento: LocalDate) {
@@ -133,6 +153,7 @@ class ScanViewModel(
             val politica = politicaCanjeRepository.obtenerPoliticaPorLaboratorio(producto.laboratorioId)
             val resultado = ClasificadorProducto.clasificar(
                 producto = producto,
+                nombreLaboratorio = laboratorioRepository.obtenerNombrePorId(producto.laboratorioId) ?: "Laboratorio desconocido",
                 fechaVencimiento = fechaVencimiento,
                 politica = politica
             )

@@ -24,7 +24,7 @@ interface LaboratorioDao {
      * Obtiene el nomobre del laboratorio por medio del Id
      */
     @Query("SELECT nombre FROM laboratorios WHERE id = :id")
-    fun obtenerNombreLaboratorio(id: Int): String
+    fun obtenerNombreLaboratorio(id: Int): String?
 
     /**
      * Actualiza la información de un laboratorio.

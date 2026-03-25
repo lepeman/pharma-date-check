@@ -6,6 +6,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.currentBackStackEntryAsState
 import com.lepeman.pharmadatecheck.ui.canje.CanjeDestination
 import com.lepeman.pharmadatecheck.ui.canje.CanjeScreen
 import com.lepeman.pharmadatecheck.ui.config.ConfigDestination
