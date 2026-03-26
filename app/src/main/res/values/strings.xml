@@ -17,4 +17,8 @@
     <string name="config">Config</string>
     <string name="descripcion_inicio_sesion">Ingrese su nombre para registrar la sesión</string>
     <string name="producto_no_encontrado">Producto no encontrado en la base de datos.\\nVerifique el código EAN-13.</string>
+    <string name="eliminar_sesion">Eliminar sesión</string>
+    <string name="confirmar_aliminar_sesion">¿Eliminar la sesión de $operador y todos sus productos revisados? Esta acción no se puede deshacer.</string>
+    <string name="texto_boton_eliminar">Eliminar</string>
+    <string name="texto_cancelar">Cancelar</string>
 </resources>
