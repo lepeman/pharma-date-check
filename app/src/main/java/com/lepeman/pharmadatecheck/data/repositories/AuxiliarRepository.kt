@@ -11,6 +11,8 @@ interface AuxiliarRepository {
 
     suspend fun obtenerAuxiliarPorRut(rut: String): Auxiliar?
 
+    suspend fun obtenerNombrePorId(id: Int): String?
+
     suspend fun actualizarStream(auxiliar: Auxiliar)
 
     suspend fun insertar(auxiliar: Auxiliar)

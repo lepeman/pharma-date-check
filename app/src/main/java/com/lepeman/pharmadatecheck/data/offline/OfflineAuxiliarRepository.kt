@@ -29,6 +29,11 @@ class OfflineAuxiliarRepository(private val auxiliarDao: AuxiliarDao) : Auxiliar
     override suspend fun obtenerAuxiliarPorRut(rut: String): Auxiliar? = auxiliarDao.obtenerAuxiliarPorRut(rut)
 
     /**
+     * Obtiene el nombre del auxiliar por el Id
+     */
+    override suspend fun obtenerNombrePorId(id: Int): String? = auxiliarDao.obtenerNombrePorId(id)
+
+    /**
      * Actualiza la información de un auxiliar en la base de datos local.
      */
     override suspend fun actualizarStream(auxiliar: Auxiliar) = auxiliarDao.actualizar(auxiliar)

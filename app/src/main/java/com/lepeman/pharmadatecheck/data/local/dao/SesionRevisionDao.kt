@@ -35,7 +35,7 @@ interface SesionRevisionDao {
     /**
      * Registra una nueva sesión de revisión.
      */
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertar(sesionRevision: SesionRevision): Long
 
     /**

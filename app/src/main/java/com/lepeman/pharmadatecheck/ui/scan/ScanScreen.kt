@@ -54,10 +54,8 @@ fun ScanScreen(
     val rutaActual = navBackStackEntry?.destination
 
     val scanUiState by viewModel.scanUiState.collectAsState()
-
     val sesionUiState by viewModel.sesionUiState.collectAsState()
     val sesionActivaId by viewModel.sesionActivaId.collectAsState()
-
     val totalVigentes by viewModel.totalVigentes.collectAsState()
     val totalCanjeables by viewModel.totalCanjeables.collectAsState()
     val totalVencidos by viewModel.totalVencidos.collectAsState()
@@ -65,10 +63,8 @@ fun ScanScreen(
     val errorSesion = (sesionUiState as? ScanViewModel.SesionUiState.Error)?.mensaje
 
     var inputManual by remember { mutableStateOf("") }
-
     var mostrarDialogoFecha by remember { mutableStateOf(false) }
     var ean13Pendiente by remember { mutableStateOf(mutableStateOf(sesionActivaId == null)) }
-
     var mostrarDialogoSesion by remember { mutableStateOf(sesionActivaId == null) }
     var rutAuxiliarInput by remember { mutableStateOf("") }
 
@@ -156,87 +152,3 @@ fun ScanScreen(
         }
     }
 }
-
-
-//
-//
-//
-//    if (mostrarDialogoFecha) {
-//        DialogFechaVencimiento(
-//            onConfirmar = { fecha ->
-//                viewModel.confirmarFechaYClasificar(ean13Pendiente, fecha)
-//                mostrarDialogoFecha = false
-//                ean13Pendiente = ""
-//            },
-//            onCancelar = {
-//                mostrarDialogoFecha = false
-//                ean13Pendiente = ""
-//                viewModel.resetearEstado()
-//            }
-//        )
-//    }
-//
-//    // Cuando se detecta un producto encontrado, mostrar diálogo de fecha
-//    LaunchedEffect(scanUiState) {
-//        if (scanUiState is ScanUiState.Resultado) {
-//            val resultado = (scanUiState as ScanUiState.Resultado).resultado
-//            if (resultado.diasRestantes == 0 && resultado.fechaLimiteCanje == null) {
-//                // Es un placeholder, mostrar diálogo de fecha
-//                ean13Pendiente = resultado.producto.codigoEAN13
-//                mostrarDialogoFecha = true
-//            }
-//        }
-//    }
-//
-//    Column(
-//        modifier = Modifier
-//            .fillMaxSize()
-//            .background(ColorFondo)
-//            .padding(16.dp),
-//        verticalArrangement = Arrangement.spacedBy(12.dp)
-//    ) {
-//
-//        // Encabezado con contadores de sesión
-//        ContadoresSesion(
-//            vigentes = totalVigentes,
-//            canjeables = totalCanjeables,
-//            vencidos = totalVencidos,
-//            onCerrarSesion = { viewModel.cerrarSesion() }
-//        )
-//
-//        // Zona de escaneo / ingreso manual
-//        ZonaEscaneo(
-//            inputManual = inputManual,
-//            onInputChange = { inputManual = it },
-//            onConfirmarManual = {
-//                viewModel.procesarEAN13Manual(inputManual.trim())
-//                inputManual = ""
-//            }
-//        )
-//
-//        // Área de resultado
-//        when (val state = ScanUiState) {
-//            is ScanUiState.Idle -> {
-//                MensajeEspera()
-//            }
-//            is ScanUiState.Cargando -> {
-//                Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-//                    CircularProgressIndicator(color = ColorTexto)
-//                }
-//            }
-//            is ScanUiState.ProductoNoEncontrado -> {
-//                TarjetaError("Producto no encontrado en la base de datos.\nVerifique el código EAN-13.")
-//            }
-//            is ScanUiState.Error -> {
-//                TarjetaError(state.mensaje)
-//            }
-//            is ScanUiState.Resultado -> {
-//                if (state.resultado.diasRestantes > 0 || state.resultado.fechaLimiteCanje != null) {
-//                    TarjetaResultado(
-//                        resultado = state.resultado,
-//                        onNuevoEscaneo = { viewModel.resetearEstado() }
-//                    )
-//                }
-//            }
-//        }
-//    }

@@ -28,6 +28,14 @@ object AppViewModelProvider {
                 empresaRepository = pharmaApplication().container.empresaRepository
             )
         }
+
+        initializer {
+            HistorialViewModel(
+                auxiliarRepository = pharmaApplication().container.auxiliarRepository,
+                sesionRevisionRepository = pharmaApplication().container.sesionRevisionRepository,
+                productoRevisadoRepository = pharmaApplication().container.productoRevisadoRepository
+            )
+        }
     }
 }
 

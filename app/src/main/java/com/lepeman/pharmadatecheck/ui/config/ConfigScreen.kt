@@ -37,6 +37,26 @@ fun ConfigScreen(
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val rutaActual = navBackStackEntry?.destination
 
+    val importStateProductos by viewModel.importStateProductos.collectAsState()
+    val importStateLaboratorios by viewModel.importStateLaboratorios.collectAsState()
+    val totalProductos by viewModel.totalProductos.collectAsState()
+    val totalLaboratorios by viewModel.totalLaboratorios.collectAsState()
+    val context = LocalContext.current
+
+    // Launcher para productos
+    val launcherProductos = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri ->
+        uri?.let { viewModel.importarProductosCSV(context, it) }
+    }
+
+    // Launcher para laboratorios
+    val launcherLaboratorios = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri ->
+        uri?.let { viewModel.importarLaboratoriosCSV(context, it) }
+    }
+
     Scaffold(
         bottomBar = {
             PharmaTopAppBar(
@@ -48,6 +68,94 @@ fun ConfigScreen(
             )
         }
     ) { innerPadding ->
-        Text("Pantalla Configuración", Modifier.padding(innerPadding))
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(ColorFondo)
+                .verticalScroll(rememberScrollState())
+                .padding(16.dp)
+                .padding(bottom = 24.dp), // padding extra para que el último elemento no quede pegado a elementos inferiores.
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+
+            // ── Encabezado ────────────────────────────────────────────────────────
+            Text(
+                text = "Configuración",
+                color = ColorTexto,
+                fontWeight = FontWeight.Bold,
+                fontSize = 18.sp,
+                fontFamily = FontFamily.Monospace
+            )
+            Text(
+                text = "Gestione el catálogo de productos y laboratorios",
+                color = ColorDim,
+                fontSize = 12.sp,
+                fontFamily = FontFamily.Monospace
+            )
+
+            HorizontalDivider(color = ColorBorde)
+
+            // ── Tarjeta: estado del catálogo ──────────────────────────────────────
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(containerColor = ColorCard),
+                shape = RoundedCornerShape(12.dp)
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text(
+                        text = "Catálogo actual",
+                        color = ColorDim,
+                        fontSize = 12.sp,
+                        fontFamily = FontFamily.Monospace
+                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        DatosCatalogo(
+                            cantidad = totalProductos,
+                            etiqueta = "productos"
+                        )
+                        DatosCatalogo(
+                            cantidad = totalLaboratorios,
+                            etiqueta = "laboratorios"
+                        )
+                    }
+                }
+            }
+
+            // ── tarjeta: importación de productos ──────────────────────────────────────────
+            TarjetaImportacion(
+                titulo = "Importar productos",
+                descripcionFormato = "Formato esperado:\n" +
+                        "CODIGO EAN13, NOMBRE, COD LABORATORIO\n" +
+                        "7802000000001, PARACETAMOL 500MG, 405",
+                notaOmitidos = "Los laboratorios con EAN 13 ya registrado serán omitidos",
+                importState = importStateProductos,
+                textoBoton = "Seleccionar CSV de productos",
+                onSeleccionar = { launcherProductos.launch("text/*") },
+                onReintentar = { launcherProductos.launch("text/*") },
+                onResetear = { viewModel.resetearEstadoProductos() },
+                textoExito = "productos agregados"
+            )
+
+            // ── Tarjeta: importación de laboratorios ──────────────────────────────────────────
+            TarjetaImportacion(
+                titulo = "Importar Laboratorios",
+                descripcionFormato = "Formato esperado:\n" +
+                        "CODIGO LABORATORIO, LABORATORIO\n" +
+                        "14, MENTHOLATUM",
+                notaOmitidos = "Los laboratorios con código ya registrado serán omitidos",
+                importState = importStateLaboratorios,
+                textoBoton = "Seleccionar CSV de laboratorios",
+                onSeleccionar = { launcherLaboratorios.launch("text/*") },
+                onReintentar = { launcherLaboratorios.launch("text/*") },
+                onResetear = { viewModel.resetearEstadoLaboratorios() },
+                textoExito = "laboratorios agregados"
+            )
+        }
     }
 }

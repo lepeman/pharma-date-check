@@ -34,6 +34,12 @@ interface AuxiliarDao {
     suspend fun obtenerAuxiliarPorRut(rut: String): Auxiliar?
 
     /**
+     * Obtiene el nombre del auxiliar por el Id
+     */
+    @Query("SELECT nombreAuxiliar FROM auxiliares WHERE id = :id")
+    suspend fun obtenerNombrePorId(id: Int): String?
+
+    /**
      * Actualiza la información de un auxiliar existente.
      */
     @Update

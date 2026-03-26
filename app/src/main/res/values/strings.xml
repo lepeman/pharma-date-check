@@ -21,4 +21,9 @@
     <string name="confirmar_aliminar_sesion">¿Eliminar la sesión de $operador y todos sus productos revisados? Esta acción no se puede deshacer.</string>
     <string name="texto_boton_eliminar">Eliminar</string>
     <string name="texto_cancelar">Cancelar</string>
+    <string name="texto_vigentes">Vigentes</string>
+    <string name="texto_canjeables">Canjeables</string>
+    <string name="texto_vencidos">Vencidos</string>
+    <string name="texto_total">Total</string>
+    <string name="historial_revisiones">Historial de Revisiones</string>
 </resources>
