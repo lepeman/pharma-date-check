@@ -1,17 +1,31 @@
 package com.lepeman.pharmadatecheck.ui.viewmodels
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.lepeman.pharmadatecheck.data.local.entities.Laboratorio
 import com.lepeman.pharmadatecheck.data.local.entities.PoliticaCanje
 import com.lepeman.pharmadatecheck.data.repositories.EmpresaRepository
 import com.lepeman.pharmadatecheck.data.repositories.LaboratorioRepository
 import com.lepeman.pharmadatecheck.data.repositories.PoliticaCanjeRepository
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.WhileSubscribed
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import kotlin.collections.emptyList
 
 class CanjeViewModel(
     private val politicaCanjeRepository: PoliticaCanjeRepository,
@@ -96,6 +110,22 @@ class CanjeViewModel(
             errorLaboratorio = null
         )
     }
+
+    var searchQuery by mutableStateOf("")
+
+    @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
+    val sugerencias = snapshotFlow { searchQuery }
+        .debounce(300)
+        .distinctUntilChanged()
+        .mapLatest { query ->
+            if (query.length < 2) emptyList<Laboratorio>()
+            else laboratorioRepository.buscarItems(query)
+        }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList<Laboratorio>()
+        )
 
     fun solicitarEliminar(politica: PoliticaCanje) {
         _politicaAEliminar.value = politica

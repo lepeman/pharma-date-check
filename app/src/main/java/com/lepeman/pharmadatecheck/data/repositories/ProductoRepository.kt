@@ -15,4 +15,8 @@ interface ProductoRepository {
 
     suspend fun eliminar(producto: Producto)
 
+    suspend fun contarProductos(): Int
+
+    suspend fun insertarProductos(productos: List<Producto>)
+
 }

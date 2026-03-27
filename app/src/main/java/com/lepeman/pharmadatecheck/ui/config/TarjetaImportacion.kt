@@ -26,19 +26,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.lepeman.medicheck.data.repository.LaboratorioRepository
-import com.lepeman.medicheck.data.repository.PoliticaCanjeRepository
-import com.lepeman.medicheck.data.repository.ProductoRepository
-import com.lepeman.medicheck.data.repository.ProductoRevisadoRepository
-import com.lepeman.medicheck.data.repository.SesionRevisionRepository
-import com.lepeman.medicheck.ui.theme.ColorBorde
-import com.lepeman.medicheck.ui.theme.ColorCard
-import com.lepeman.medicheck.ui.theme.ColorDim
-import com.lepeman.medicheck.ui.theme.ColorTexto
-import com.lepeman.medicheck.ui.theme.ColorVencido
-import com.lepeman.medicheck.ui.theme.ColorVigente
-import com.lepeman.medicheck.ui.viewmodel.ConfigViewModel
-import com.lepeman.medicheck.ui.viewmodel.MedicheckViewModelFactory
+import com.lepeman.pharmadatecheck.ui.theme.ColorBorde
+import com.lepeman.pharmadatecheck.ui.theme.ColorCard
+import com.lepeman.pharmadatecheck.ui.theme.ColorDim
+import com.lepeman.pharmadatecheck.ui.theme.ColorTexto
+import com.lepeman.pharmadatecheck.ui.theme.ColorVencido
+import com.lepeman.pharmadatecheck.ui.theme.ColorVigente
+import com.lepeman.pharmadatecheck.ui.viewmodels.ConfigViewModel
 
 // ── Componible: tarjeta de importación reutilizable ──────────────────────────
 @Composable

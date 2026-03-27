@@ -71,7 +71,7 @@ class ConfigViewModel(
                 }
 
                 val totalAntes = productoRepository.contarProductos()
-                productoRepository.importarDesdeCSV(productos)
+                productoRepository.insertarProductos(productos)
                 val totalDespues = productoRepository.contarProductos()
 
                 val importados = totalDespues - totalAntes
@@ -98,7 +98,7 @@ class ConfigViewModel(
             _importStateLaboratorios.value = ImportState.Procesando
 
             try {
-                when (val resultado = laboratorioRepository.importarDesdeCSV(context, uri)) {
+                when (val resultado = laboratorioRepository.insertarLaboratoriosDesdeCSV(context, uri)) {
                     is ResultadoImportacion.Exito -> {
                         _totalLaboratorios.value = laboratorioRepository.contarLaboratorios()
                         _importStateLaboratorios.value = ImportState.Exito(

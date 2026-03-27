@@ -1,11 +1,31 @@
 package com.lepeman.pharmadatecheck.ui.config
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
@@ -14,7 +34,13 @@ import com.lepeman.pharmadatecheck.PharmaTopAppBar
 import com.lepeman.pharmadatecheck.R
 import com.lepeman.pharmadatecheck.ui.historial.HistorialDestination
 import com.lepeman.pharmadatecheck.ui.navigation.PharmaNavigation
+import com.lepeman.pharmadatecheck.ui.theme.ColorBorde
+import com.lepeman.pharmadatecheck.ui.theme.ColorCard
+import com.lepeman.pharmadatecheck.ui.theme.ColorDim
+import com.lepeman.pharmadatecheck.ui.theme.ColorFondo
+import com.lepeman.pharmadatecheck.ui.theme.ColorTexto
 import com.lepeman.pharmadatecheck.ui.viewmodels.AppViewModelProvider
+import com.lepeman.pharmadatecheck.ui.viewmodels.ConfigViewModel
 import com.lepeman.pharmadatecheck.ui.viewmodels.ScanViewModel
 
 object ConfigDestination : PharmaNavigation {
@@ -31,7 +57,7 @@ fun ConfigScreen(
     navigateToCanje: () -> Unit,
     navigateToConfig: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: ScanViewModel = viewModel(factory = AppViewModelProvider.Factory)
+    viewModel: ConfigViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -73,7 +99,7 @@ fun ConfigScreen(
                 .fillMaxWidth()
                 .background(ColorFondo)
                 .verticalScroll(rememberScrollState())
-                .padding(16.dp)
+                .padding(innerPadding)
                 .padding(bottom = 24.dp), // padding extra para que el último elemento no quede pegado a elementos inferiores.
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {

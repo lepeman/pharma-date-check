@@ -13,6 +13,10 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -60,47 +64,59 @@ fun DialogFormularioCanje(
                 )
 
                 CampoFormulario(
-                    label = "Laboratorio",
-                    value = form.nombreLaboratorio,
-                    onValueChange = onLaboratorioChange,
+                    label = "LABORATORIO",
+                    placeholder = "Ej: MintLab",
                     error = form.errorLaboratorio,
-                    placeholder = "Ej: MintLab"
+                    searchQuery = form.nombreLaboratorio,
+                    expanded = false,
+                    onExpandedChange = {},
+                    onQueryChange = onLaboratorioChange
                 )
 
                 CampoFormulario(
-                    label = "Empresa",
-                    value = form.nombreEmpresa,
-                    onValueChange = onEmpresaChange,
+                    label = "EMPRESA",
+                    placeholder = "Ej: ANDROMACO S.A.",
                     error = form.errorEmpresa,
-                    placeholder = "Ej: ANDROMACO S.A."
+                    searchQuery = form.nombreEmpresa,
+                    expanded = false,
+                    onExpandedChange = {},
+                    onQueryChange = {}
                 )
 
                 CampoFormulario(
                     label = "Vencimiento",
-                    value = form.vencimiento,
-                    onValueChange = onVencimientoChange,
-                    placeholder = "Ej: SI"
+                    placeholder = "Ej: SI",
+                    searchQuery = form.vencimiento,
+                    expanded = false,
+                    onExpandedChange = {},
+                    onQueryChange = {}
                 )
 
                 CampoFormulario(
                     label = "Mes Uno",
-                    value = form.fechaUno,
-                    onValueChange = onMesUnoChange,
-                    placeholder = "Ej: 01/2026"
+                    placeholder = "Ej: 01/2026",
+                    searchQuery = form.fechaUno,
+                    expanded = false,
+                    onExpandedChange = {},
+                    onQueryChange = {}
                 )
 
                 CampoFormulario(
                     label = "Mes Uno",
-                    value = form.fechaUno,
-                    onValueChange = onMesDosChange,
-                    placeholder = "Ej: 02/2026"
+                    placeholder = "",
+                    searchQuery = form.fechaDos,
+                    expanded = false,
+                    onExpandedChange = {},
+                    onQueryChange = {}
                 )
 
                 CampoFormulario(
-                    label = "Mes Uno",
-                    value = form.fechaUno,
-                    onValueChange = onMesTresChange,
-                    placeholder = "Ej: 03/2026"
+                    label = "Mes Tres",
+                    placeholder = "",
+                    searchQuery = form.fechaTres,
+                    expanded = false,
+                    onExpandedChange = {},
+                    onQueryChange = {}
                 )
 
                 Row(
@@ -133,10 +149,14 @@ fun DialogFormularioCanje(
 @Preview(showBackground = true, backgroundColor = 0xFF0F1117)
 @Composable
 fun DialogFormularioCanjePreview() {
+
+    var textoLaboratorio by remember { mutableStateOf("") }
+    var isMenuExpanded by remember { mutableStateOf(false) }
+
     PharmaDateCheckTheme {
         DialogFormularioCanje(
             form = CanjeViewModel.FormularioState.Visible(),
-            onLaboratorioChange = {},
+            onLaboratorioChange = { textoLaboratorio = it },
             onEmpresaChange = {},
             onVencimientoChange = {},
             onMesUnoChange = {},

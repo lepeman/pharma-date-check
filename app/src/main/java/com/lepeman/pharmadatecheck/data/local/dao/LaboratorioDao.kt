@@ -27,6 +27,12 @@ interface LaboratorioDao {
     fun obtenerNombreLaboratorio(id: Int): String?
 
     /**
+     * Obtiene una lista de items por medio dle operador "LIKE"
+     */
+    @Query("SELECT * FROM laboratorios WHERE nombre LIKE '%' || :query || '%'")
+    fun buscarItems(query: String): Flow<List<Laboratorio>>
+
+    /**
      * Actualiza la información de un laboratorio.
      */
     @Update
@@ -39,14 +45,21 @@ interface LaboratorioDao {
     suspend fun insertar(laboratorio: Laboratorio)
 
     /**
-     * Registra una lista de nuevos laboratorios
+     * Inserta una lista de items en la tabla "laboratorios",
+     * si algún item existe, simplemente se ignora
      */
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertarTodosLosLaboratorios(list: List<Laboratorio>)
+    suspend fun insertarTodosLosLaboratorios(laboratorios: List<Laboratorio>)
 
     /**
      * Elimina un laboratorio.
      */
     @Delete
     suspend fun eliminar(laboratorio: Laboratorio)
+
+    /**
+     * Obtiene la cantidad de items contenidos en la tabla "laboratorios"
+     */
+    @Query("SELECT COUNT(*) FROM laboratorios")
+    suspend fun contarLaboratorios(): Int
 }

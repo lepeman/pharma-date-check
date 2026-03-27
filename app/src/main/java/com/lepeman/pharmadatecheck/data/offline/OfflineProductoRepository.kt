@@ -34,7 +34,18 @@ class OfflineProductoRepository(private val productoDao: ProductoDao) : Producto
     override suspend fun insertar(producto: Producto) = productoDao.insertar(producto)
 
     /**
+     * Inserta una lista de items en la tabla "productos", y si algún item existe,
+     * simplemente lo ignora.
+     */
+    override suspend fun insertarProductos(productos: List<Producto>) = productoDao.insertarProductos(productos)
+
+    /**
      * Elimina un producto de la base de datos local.
      */
     override suspend fun eliminar(producto: Producto) = productoDao.eliminar(producto)
+
+    /**
+     * Cuenta la cantidad de items estan contenidos en la tabla
+     */
+    override suspend fun contarProductos(): Int = productoDao.contarProductos()
 }

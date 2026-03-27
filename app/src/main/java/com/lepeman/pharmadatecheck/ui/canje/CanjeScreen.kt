@@ -51,10 +51,6 @@ object CanjeDestination : PharmaNavigation {
     override val titleRes = R.string.canje
 }
 
-/**
- * Pantalla de Canje con Estado (Stateful).
- * Se encarga de la comunicación con el ViewModel.
- */
 @Composable
 fun CanjeScreen(
     navController: NavHostController,
@@ -62,7 +58,6 @@ fun CanjeScreen(
     navigateToHistorial: () -> Unit,
     navigateToCanje: () -> Unit,
     navigateToConfig: () -> Unit,
-    modifier: Modifier = Modifier,
     viewModel: CanjeViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
