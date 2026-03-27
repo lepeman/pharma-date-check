@@ -72,11 +72,9 @@ fun CanjeScreen(
         DialogFormularioCanje(
             form = form,
             onLaboratorioChange = viewModel::onLaboratorioChange,
-            onEmpresaChange = {},
+            onDiasChange = {},
             onVencimientoChange = {},
-            onMesUnoChange = {},
-            onMesDosChange = {},
-            onMesTresChange = {},
+            onCondicionesChange = {},
             onGuardar = {},
             onCancelar = {}
         )
@@ -84,7 +82,7 @@ fun CanjeScreen(
 
     politicaAEliminar?.let { politica ->
         DialogConfirmarEliminar(
-            laboratorioId = politica.laboratorioId,
+            laboratorio = politica.laboratorioId.toString(),
             onConfirmar = viewModel::confirmarEliminar,
             onCancelar = viewModel::cancelarEliminar
         )

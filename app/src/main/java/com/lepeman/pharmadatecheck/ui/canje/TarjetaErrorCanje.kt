@@ -9,11 +9,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lepeman.pharmadatecheck.ui.theme.ColorVencido
-import com.lepeman.pharmadatecheck.ui.theme.PharmaDateCheckTheme
 
 @Composable
 fun TarjetaErrorCanje(mensaje: String) {
@@ -29,13 +27,5 @@ fun TarjetaErrorCanje(mensaje: String) {
             fontFamily = FontFamily.Monospace,
             modifier = Modifier.padding(16.dp)
         )
-    }
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFF0F1117)
-@Composable
-fun TarjetaErrorCanjePreview() {
-    PharmaDateCheckTheme {
-        TarjetaErrorCanje("Hubo problemas con el producto.")
     }
 }

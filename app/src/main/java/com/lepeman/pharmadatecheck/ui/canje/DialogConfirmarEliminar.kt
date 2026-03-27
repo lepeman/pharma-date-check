@@ -13,11 +13,12 @@ import com.lepeman.pharmadatecheck.ui.theme.ColorCard
 import com.lepeman.pharmadatecheck.ui.theme.ColorDim
 import com.lepeman.pharmadatecheck.ui.theme.ColorFondo
 import com.lepeman.pharmadatecheck.ui.theme.ColorTexto
+import com.lepeman.pharmadatecheck.ui.theme.ColorVencido
 import com.lepeman.pharmadatecheck.ui.theme.PharmaDateCheckTheme
 
 @Composable
 fun DialogConfirmarEliminar(
-    laboratorioId: Int,
+    laboratorio: String,
     onConfirmar: () -> Unit,
     onCancelar: () -> Unit
 ) {
@@ -26,7 +27,7 @@ fun DialogConfirmarEliminar(
         containerColor = ColorCard,
         title = {
             Text(
-                text = "Eliminar política",
+                "Eliminar política",
                 color = ColorTexto,
                 fontFamily = FontFamily.Monospace,
                 fontWeight = FontWeight.Bold
@@ -34,15 +35,16 @@ fun DialogConfirmarEliminar(
         },
         text = {
             Text(
-                text = "¿Eliminar la política de $laboratorioId? Esta acción no se puede deshacer.",
+                "¿Eliminar la política de canje de $laboratorio? Esta acción no se puede deshacer.",
                 color = ColorDim,
                 fontFamily = FontFamily.Monospace,
-                fontSize = 13.sp,
+                fontSize = 13.sp
             )
         },
         confirmButton = {
             TextButton(onClick = onConfirmar) {
-                Text("Eliminar", color = ColorDim, fontFamily = FontFamily.Monospace)
+                Text("Eliminar", color = ColorVencido,
+                    fontFamily = FontFamily.Monospace, fontWeight = FontWeight.Bold)
             }
         },
         dismissButton = {
@@ -51,16 +53,4 @@ fun DialogConfirmarEliminar(
             }
         }
     )
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFF0F1117)
-@Composable
-fun DialogConfirmarEliminarPreview() {
-    PharmaDateCheckTheme {
-        DialogConfirmarEliminar(
-            laboratorioId = 12,
-            onConfirmar = {},
-            onCancelar = {}
-        )
-    }
 }

@@ -33,6 +33,8 @@ class CanjeViewModel(
     private val empresaRepository: EmpresaRepository
 ) : ViewModel() {
 
+    // ── Estados anidados ──────────────────────────────────────────────────────
+
     sealed class UiState {
         object Cargando : UiState()
         object Vacio : UiState()
@@ -41,115 +43,169 @@ class CanjeViewModel(
     }
 
     sealed class FormularioState {
-        object Oculto: FormularioState()
+        object Oculto : FormularioState()
         data class Visible(
             val politica: PoliticaCanje? = null,
-            val nombreLaboratorio: String = "",
-            val nombreEmpresa: String = "",
-            val vencimiento: String = "",
-            val fechaUno: String = "",
-            val fechaDos: String = "",
-            val fechaTres: String = "",
+            val razonSocial: String = "",
+            val laboratorio: String = "",
+            val vencimiento: Boolean = false,
+            val mesUno: String = "",
+            val mesDos: String = "",
+            val mesTres: String = "",
+            val errorEmpresa: String? = null,
             val errorLaboratorio: String? = null,
-            val errorEmpresa: String? = null
-        ): FormularioState()
+            val errorDias: String? = null
+        ) : FormularioState()
     }
 
-    // Estado principal - lista de políticas
-    private val _uiState = MutableStateFlow<UiState>(UiState.Cargando)
-    val uiState: StateFlow<UiState> = _uiState.asStateFlow()
+        // ── StateFlows ────────────────────────────────────────────────────────────
 
-    // Estado del formulario
-    private val _formulario = MutableStateFlow<FormularioState>(FormularioState.Oculto)
-    val formulario: StateFlow<FormularioState> = _formulario.asStateFlow()
+        private val _uiState = MutableStateFlow<UiState>(UiState.Cargando)
+        val uiState: StateFlow<UiState> = _uiState.asStateFlow()
 
-    private val _politicaAEliminar = MutableStateFlow<PoliticaCanje?>(null)
-    val politicaAEliminar: StateFlow<PoliticaCanje?> = _politicaAEliminar.asStateFlow()
+        private val _formulario = MutableStateFlow<FormularioState>(FormularioState.Oculto)
+        val formulario: StateFlow<FormularioState> = _formulario.asStateFlow()
 
-    init {
-        cargarPoliticas()
-    }
+        private val _politicaAEliminar = MutableStateFlow<PoliticaCanje?>(null)
+        val politicaAEliminar: StateFlow<PoliticaCanje?> = _politicaAEliminar.asStateFlow()
 
-    private fun cargarPoliticas() {
-        viewModelScope.launch {
-            politicaCanjeRepository.obtenerTodas().collect { politicas ->
-                _uiState.value = if (politicas.isEmpty()) {
-                    UiState.Vacio
-                } else {
-                    UiState.ConDatos(politicas)
+        init {
+            cargarPoliticas()
+        }
+
+        // ── Carga de políticas ────────────────────────────────────────────────────
+
+        private fun cargarPoliticas() {
+            viewModelScope.launch {
+                politicaCanjeRepository.todasLasPoliticas.collect { politicas ->
+                    _uiState.value = if (politicas.isEmpty()) {
+                        UiState.Vacio
+                    } else {
+                        UiState.ConDatos(politicas)
+                    }
                 }
             }
         }
-    }
 
-    fun abrirFormularioNuevo() {
-        _formulario.value = FormularioState.Visible()
-    }
+        // ── Formulario ────────────────────────────────────────────────────────────
 
-    fun abrirFormularioEdicion(politica: PoliticaCanje) {
-        _formulario.value = FormularioState.Visible(
-            politica = politica,
-            nombreLaboratorio = laboratorioRepository.obtenerNombrePorId(politica.laboratorioId) ?: "Laboratorio desconocido",
-            nombreEmpresa = empresaRepository.obtenerNombreEmpresa(politica.empresaId),
-            vencimiento = if (politica.vencimiento) "SI" else "NO",
-            fechaUno = politica.mesUno.toFormatoFormulario(),
-            fechaDos = politica.mesDos.toFormatoFormulario(),
-            fechaTres = politica.mesTres.toFormatoFormulario()
-        )
-    }
-
-    fun LocalDate?.toFormatoFormulario(): String {
-        val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
-        return this?.format(formatter) ?: ""
-    }
-
-    fun onLaboratorioChange(valor: String) {
-        val actual = _formulario.value as? FormularioState.Visible ?: return
-        _formulario.value = actual.copy(
-            nombreLaboratorio = valor,
-            errorLaboratorio = null
-        )
-    }
-
-    var searchQuery by mutableStateOf("")
-
-    @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
-    val sugerencias = snapshotFlow { searchQuery }
-        .debounce(300)
-        .distinctUntilChanged()
-        .mapLatest { query ->
-            if (query.length < 2) emptyList<Laboratorio>()
-            else laboratorioRepository.buscarItems(query)
+        fun abrirFormularioNuevo() {
+            _formulario.value = FormularioState.Visible()
         }
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = emptyList<Laboratorio>()
-        )
 
-    fun solicitarEliminar(politica: PoliticaCanje) {
-        _politicaAEliminar.value = politica
-    }
+        fun abrirFormularioEdicion(politica: PoliticaCanje) {
+            _formulario.value = FormularioState.Visible(
+                politica = politica,
+                laboratorio = politica.laboratorio,
+                diasAnticipacion = politica.diasAnticipacion.toString(),
+                porcentajeRecuperacion = politica.porcentajeRecuperacion.toString(),
+                condiciones = politica.condiciones ?: ""
+            )
+        }
 
-    fun confirmarEliminar() {
-        viewModelScope.launch {
-            _politicaAEliminar.value?.let { politica ->
-                politicaCanjeRepository.eliminarPorId(politica.id)
-                _politicaAEliminar.value = null
+        fun cerrarFormulario() {
+            _formulario.value = FormularioState.Oculto
+        }
+
+        // ── Actualización de campos ───────────────────────────────────────────────
+
+        fun onLaboratorioChange(valor: String) {
+            val actual = _formulario.value as? FormularioState.Visible ?: return
+            _formulario.value = actual.copy(laboratorio = valor, errorLaboratorio = null)
+        }
+
+        fun onDiasAnticipacionChange(valor: String) {
+            val actual = _formulario.value as? FormularioState.Visible ?: return
+            if (valor.all { it.isDigit() }) {
+                _formulario.value = actual.copy(diasAnticipacion = valor, errorDias = null)
             }
         }
-    }
 
-    fun cancelarEliminar() {
-        _politicaAEliminar.value = null
-    }
-
-    fun prepoblarSiVacio() {
-        viewModelScope.launch {
-            if (_uiState.value is UiState.Vacio) {
-                politicaCanjeRepository.prepoblarSiVacio()
+        fun onPorcentajeChange(valor: String) {
+            val actual = _formulario.value as? FormularioState.Visible ?: return
+            if (valor.all { it.isDigit() } && (valor.isEmpty() || valor.toInt() <= 100)) {
+                _formulario.value = actual.copy(porcentajeRecuperacion = valor)
             }
         }
-    }
 
+        fun onCondicionesChange(valor: String) {
+            val actual = _formulario.value as? FormularioState.Visible ?: return
+            _formulario.value = actual.copy(condiciones = valor)
+        }
+
+        // ── Guardar política ──────────────────────────────────────────────────────
+
+        fun guardarPolitica() {
+            val form = _formulario.value as? FormularioState.Visible ?: return
+
+            var hayError = false
+
+            if (form.laboratorio.isBlank()) {
+                _formulario.value = form.copy(errorLaboratorio = "El nombre del laboratorio es obligatorio.")
+                hayError = true
+            }
+
+            val dias = form.diasAnticipacion.toIntOrNull()
+            if (dias == null || dias <= 0) {
+                _formulario.value = (_formulario.value as? FormularioState.Visible ?: form)
+                    .copy(errorDias = "Ingrese un número de días válido (mayor a 0).")
+                hayError = true
+            }
+
+            if (hayError) return
+
+            val porcentaje = form.porcentajeRecuperacion.toFloatOrNull() ?: 100f
+
+            viewModelScope.launch {
+                if (form.politica == null) {
+                    politicaCanjeRepository.insertar(
+                        PoliticaCanje(
+                            laboratorio = form.laboratorio.trim(),
+                            diasAnticipacion = dias!!,
+                            porcentajeRecuperacion = porcentaje,
+                            condiciones = form.condiciones.trim().ifBlank { null }
+                        )
+                    )
+                } else {
+                    politicaCanjeRepository.actualizar(
+                        form.politica.copy(
+                            laboratorio = form.laboratorio.trim(),
+                            diasAnticipacion = dias!!,
+                            porcentajeRecuperacion = porcentaje,
+                            condiciones = form.condiciones.trim().ifBlank { null }
+                        )
+                    )
+                }
+                cerrarFormulario()
+            }
+        }
+
+        // ── Eliminación ───────────────────────────────────────────────────────────
+
+        fun solicitarEliminar(politica: PoliticaCanje) {
+            _politicaAEliminar.value = politica
+        }
+
+        fun confirmarEliminar() {
+            viewModelScope.launch {
+                _politicaAEliminar.value?.let { politica ->
+                    politicaCanjeRepository.eliminarPorId(politica.id)
+                    _politicaAEliminar.value = null
+                }
+            }
+        }
+
+        fun cancelarEliminar() {
+            _politicaAEliminar.value = null
+        }
+
+        // ── Prepoblado inicial ────────────────────────────────────────────────────
+
+        fun prepoblarSiVacio() {
+            viewModelScope.launch {
+                if (_uiState.value is UiState.Vacio) {
+                    politicaCanjeRepository.prepoblarSiVacio()
+                }
+            }
+        }
 }
