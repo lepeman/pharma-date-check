@@ -71,10 +71,12 @@ fun CanjeScreen(
         val form = formulario as CanjeViewModel.FormularioState.Visible
         DialogFormularioCanje(
             form = form,
+            onEmpresaChange = viewModel::onEmpresaChange,
             onLaboratorioChange = viewModel::onLaboratorioChange,
-            onDiasChange = {},
-            onVencimientoChange = {},
-            onCondicionesChange = {},
+            onVencimientoChange = viewModel::onVencimientoChange,
+            onMesUnoChange = viewModel::onMesUnoChange,
+            onMesDosChange = viewModel::onMesDosChange,
+            onMesTresChange = viewModel::onMesTresChange,
             onGuardar = {},
             onCancelar = {}
         )

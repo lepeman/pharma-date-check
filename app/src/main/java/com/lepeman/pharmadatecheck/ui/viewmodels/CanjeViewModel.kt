@@ -49,9 +49,9 @@ class CanjeViewModel(
             val razonSocial: String = "",
             val laboratorio: String = "",
             val vencimiento: Boolean = false,
-            val mesUno: String = "",
-            val mesDos: String = "",
-            val mesTres: String = "",
+            val mesUno: LocalDate? = null,
+            val mesDos: LocalDate? = null,
+            val mesTres: LocalDate? = null,
             val errorEmpresa: String? = null,
             val errorLaboratorio: String? = null,
             val errorDias: String? = null
@@ -77,7 +77,7 @@ class CanjeViewModel(
 
         private fun cargarPoliticas() {
             viewModelScope.launch {
-                politicaCanjeRepository.todasLasPoliticas.collect { politicas ->
+                politicaCanjeRepository.obtenerTodas().collect { politicas ->
                     _uiState.value = if (politicas.isEmpty()) {
                         UiState.Vacio
                     } else {
@@ -96,10 +96,15 @@ class CanjeViewModel(
         fun abrirFormularioEdicion(politica: PoliticaCanje) {
             _formulario.value = FormularioState.Visible(
                 politica = politica,
-                laboratorio = politica.laboratorio,
-                diasAnticipacion = politica.diasAnticipacion.toString(),
-                porcentajeRecuperacion = politica.porcentajeRecuperacion.toString(),
-                condiciones = politica.condiciones ?: ""
+                razonSocial = empresaRepository.obtenerNombreEmpresa(politica.laboratorioId),
+                laboratorio = laboratorioRepository.obtenerNombrePorId(politica.laboratorioId) ?: "",
+                vencimiento = politica.vencimiento,
+                mesUno = politica.mesUno,
+                mesDos = politica.mesDos,
+                mesTres = politica.mesTres,
+                errorEmpresa = null,
+                errorLaboratorio = null,
+                errorDias = null
             )
         }
 

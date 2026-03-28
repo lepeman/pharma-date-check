@@ -31,10 +31,12 @@ import com.lepeman.pharmadatecheck.ui.viewmodels.CanjeViewModel
 @Composable
 fun DialogFormularioCanje(
     form: CanjeViewModel.FormularioState.Visible,
+    onEmpresaChange: (String) -> Unit,
     onLaboratorioChange: (String) -> Unit,
-    onDiasChange: (String) -> Unit,
     onVencimientoChange: (Boolean) -> Unit,
-    onCondicionesChange: (String) -> Unit,
+    onMesUnoChange: (String) -> Unit,
+    onMesDosChange: (String) -> Unit,
+    onMesTresChange: (String) -> Unit,
     onGuardar: () -> Unit,
     onCancelar: () -> Unit
 ) {
@@ -61,16 +63,16 @@ fun DialogFormularioCanje(
                 CampoFormulario(
                     label = "RazonSocial",
                     value = form.razonSocial,
-                    onValueChange = onLaboratorioChange,
+                    onValueChange = onEmpresaChange,
                     error = form.errorEmpresa,
                     placeholder = "Ej: Mintlab S.A."
                 )
 
-                // Días de anticipación
+                // Campo Laboratorio
                 CampoFormulario(
                     label = "Laboratorio",
                     value = form.laboratorio,
-                    onValueChange = onDiasChange,
+                    onValueChange = onLaboratorioChange,
                     error = form.errorLaboratorio,
                     placeholder = "Ej: MintLab",
                     keyboardType = KeyboardType.Number
@@ -82,11 +84,11 @@ fun DialogFormularioCanje(
                     onCheckedChange = onVencimientoChange
                 )
 
-                // Condiciones especiales
+                // Mes Uno
                 CampoFormulario(
                     label = "Mes 1",
                     value = form.mesUno,
-                    onValueChange = onCondicionesChange,
+                    onValueChange = onMesUnoChange,
                     placeholder = "Ej: 06/2026",
                     singleLine = false
                 )
@@ -94,7 +96,7 @@ fun DialogFormularioCanje(
                 CampoFormulario(
                     label = "Mes 2",
                     value = form.mesDos,
-                    onValueChange = onCondicionesChange,
+                    onValueChange = onMesDosChange,
                     placeholder = "Ej: 07/2026",
                     singleLine = false
                 )
@@ -102,7 +104,7 @@ fun DialogFormularioCanje(
                 CampoFormulario(
                     label = "Mes 3",
                     value = form.mesTres,
-                    onValueChange = onCondicionesChange,
+                    onValueChange = onMesTresChange,
                     placeholder = "Ej: 08/2026",
                     singleLine = false
                 )
