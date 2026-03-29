@@ -6,6 +6,7 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.lepeman.pharmadatecheck.DateCheckApplication
+import com.lepeman.pharmadatecheck.ui.config.ConfigScreen
 
 object AppViewModelProvider {
     val Factory = viewModelFactory {
@@ -34,6 +35,13 @@ object AppViewModelProvider {
                 auxiliarRepository = pharmaApplication().container.auxiliarRepository,
                 sesionRevisionRepository = pharmaApplication().container.sesionRevisionRepository,
                 productoRevisadoRepository = pharmaApplication().container.productoRevisadoRepository
+            )
+        }
+
+        initializer {
+            ConfigViewModel(
+                productoRepository = pharmaApplication().container.productoRepository,
+                laboratorioRepository = pharmaApplication().container.laboratorioRepository
             )
         }
     }

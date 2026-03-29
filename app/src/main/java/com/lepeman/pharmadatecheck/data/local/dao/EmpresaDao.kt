@@ -7,6 +7,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import com.lepeman.pharmadatecheck.data.local.entities.Empresa
+import com.lepeman.pharmadatecheck.data.local.entities.Laboratorio
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -25,6 +26,15 @@ interface EmpresaDao {
      */
     @Query("SELECT razonSocial FROM empresas WHERE id = :id")
     fun obtenerNombreEmpresa(id: Int): String
+
+    @Query("SELECT id FROM empresas WHERE razonSocial = :razonSocial")
+    fun obtenerIdPorNombre(razonSocial: String): Int
+
+    /**
+     * Obtiene una lista de items por medio del operador "LIKE"
+     */
+    @Query("SELECT * FROM empresas WHERE razonSocial LIKE '%' || :query || '%'")
+    fun buscarItems(query: String): Flow<List<Empresa>>
 
     /**
      * Actualiza los datos de una empresa.

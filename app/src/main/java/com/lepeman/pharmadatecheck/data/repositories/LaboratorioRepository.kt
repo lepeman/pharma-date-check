@@ -14,6 +14,8 @@ interface LaboratorioRepository {
 
     fun buscarItems(query: String): Flow<List<Laboratorio>>
 
+    suspend fun obtenerIdPorNombre(nombre: String): Int
+
     suspend fun actualizar(laboratorio: Laboratorio)
 
     suspend fun insertar(laboratorio: Laboratorio)

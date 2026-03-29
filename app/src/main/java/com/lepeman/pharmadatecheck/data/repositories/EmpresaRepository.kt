@@ -9,6 +9,10 @@ interface EmpresaRepository {
 
     fun obtenerNombreEmpresa(id: Int): String
 
+    fun obtenerIdPorNombre(razonSocial: String): Int
+
+    fun buscarItems(query: String): Flow<List<Empresa>>
+
     suspend fun actualizar(empresa: Empresa)
 
     suspend fun insertar(empresa: Empresa)

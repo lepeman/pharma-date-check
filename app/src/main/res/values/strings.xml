@@ -27,4 +27,5 @@
     <string name="texto_total">Total</string>
     <string name="historial_revisiones">Historial de Revisiones</string>
     <string name="editar_politica">Editar Política de Canje</string>
+    <string name="advertencia_laboratorio">El nombre del laboratorio es obligatorio.</string>
 </resources>

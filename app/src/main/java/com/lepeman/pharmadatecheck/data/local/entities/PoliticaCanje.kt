@@ -40,7 +40,7 @@ import java.time.LocalDate
     ])
 data class PoliticaCanje(
     @PrimaryKey(autoGenerate = true)
-    val id: Int,
+    val id: Int = 0,
     val empresaId: Int,
     val laboratorioId: Int,
     val vencimiento: Boolean,

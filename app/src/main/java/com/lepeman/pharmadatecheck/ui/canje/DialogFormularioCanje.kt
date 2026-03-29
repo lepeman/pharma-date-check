@@ -22,17 +22,32 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.lepeman.pharmadatecheck.R
+import com.lepeman.pharmadatecheck.data.local.entities.Empresa
+import com.lepeman.pharmadatecheck.data.local.entities.Laboratorio
 import com.lepeman.pharmadatecheck.ui.theme.ColorBorde
 import com.lepeman.pharmadatecheck.ui.theme.ColorCard
 import com.lepeman.pharmadatecheck.ui.theme.ColorDim
 import com.lepeman.pharmadatecheck.ui.theme.ColorTexto
 import com.lepeman.pharmadatecheck.ui.viewmodels.CanjeViewModel
+import com.lepeman.pharmadatecheck.ui.viewmodels.CanjeViewModel.FormularioState
+import java.time.LocalDate
 
 @Composable
 fun DialogFormularioCanje(
     form: CanjeViewModel.FormularioState.Visible,
+    // Empresa
+    sugerenciasEmpresas: List<Empresa>,
+    expandedEmpresa: Boolean,
     onEmpresaChange: (String) -> Unit,
+    onEmpresaSeleccionada: (Empresa) -> Unit,
+    onExpandedEmpresaChange: (Boolean) -> Unit,
+    // Laboratorio
+    sugerenciasLaboratorios: List<Laboratorio>,
+    expandedLaboratorio: Boolean,
     onLaboratorioChange: (String) -> Unit,
+    onLaboratorioSeleccionado: (Laboratorio) -> Unit,
+    onExpandedLaboratorioChange: (Boolean) -> Unit,
+    // Resto
     onVencimientoChange: (Boolean) -> Unit,
     onMesUnoChange: (String) -> Unit,
     onMesDosChange: (String) -> Unit,
@@ -40,8 +55,6 @@ fun DialogFormularioCanje(
     onGuardar: () -> Unit,
     onCancelar: () -> Unit
 ) {
-    val titulo = stringResource(if (form.politica == null) R.string.nueva_politica else R.string.editar_politica)
-
     Dialog(onDismissRequest = onCancelar) {
         Card(
             colors = CardDefaults.cardColors(containerColor = ColorCard),
@@ -52,30 +65,35 @@ fun DialogFormularioCanje(
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 Text(
-                    titulo,
+                    if (form.politica == null) stringResource(R.string.nueva_politica) else stringResource(R.string.editar_politica),
                     color = ColorTexto,
                     fontWeight = FontWeight.Bold,
                     fontSize = 15.sp,
                     fontFamily = FontFamily.Monospace
                 )
 
-                // Campo laboratorio
-                CampoFormulario(
-                    label = "RazonSocial",
-                    value = form.razonSocial,
-                    onValueChange = onEmpresaChange,
-                    error = form.errorEmpresa,
-                    placeholder = "Ej: Mintlab S.A."
+                // Campo Razón Social
+                CampoBusquedaFormulario(
+                    consulta = form.razonSocial,
+                    sugerencias = sugerenciasEmpresas,
+                    expanded = expandedEmpresa,
+                    onQueryChange = onEmpresaChange,
+                    onOptionSelected = onEmpresaSeleccionada,
+                    onExpandedChange = onExpandedEmpresaChange,
+                    itemLabel = { it.razonSocial },
+                    label = "Razón Social"
                 )
 
                 // Campo Laboratorio
-                CampoFormulario(
-                    label = "Laboratorio",
-                    value = form.laboratorio,
-                    onValueChange = onLaboratorioChange,
-                    error = form.errorLaboratorio,
-                    placeholder = "Ej: MintLab",
-                    keyboardType = KeyboardType.Number
+                CampoBusquedaFormulario(
+                    consulta = form.laboratorio,
+                    sugerencias = sugerenciasLaboratorios,
+                    expanded = expandedLaboratorio,
+                    onQueryChange = onLaboratorioChange,
+                    onOptionSelected = onLaboratorioSeleccionado,
+                    onExpandedChange = onExpandedLaboratorioChange,
+                    itemLabel = { it.nombre },
+                    label = "Laboratorio"
                 )
 
                 // Porcentaje de recuperación
@@ -87,7 +105,7 @@ fun DialogFormularioCanje(
                 // Mes Uno
                 CampoFormulario(
                     label = "Mes 1",
-                    value = form.mesUno,
+                    value = FormularioState.format(form.mesUno),
                     onValueChange = onMesUnoChange,
                     placeholder = "Ej: 06/2026",
                     singleLine = false
@@ -95,7 +113,7 @@ fun DialogFormularioCanje(
 
                 CampoFormulario(
                     label = "Mes 2",
-                    value = form.mesDos,
+                    value = FormularioState.format(form.mesDos),
                     onValueChange = onMesDosChange,
                     placeholder = "Ej: 07/2026",
                     singleLine = false
@@ -103,7 +121,7 @@ fun DialogFormularioCanje(
 
                 CampoFormulario(
                     label = "Mes 3",
-                    value = form.mesTres,
+                    value = FormularioState.format(form.mesTres),
                     onValueChange = onMesTresChange,
                     placeholder = "Ej: 08/2026",
                     singleLine = false

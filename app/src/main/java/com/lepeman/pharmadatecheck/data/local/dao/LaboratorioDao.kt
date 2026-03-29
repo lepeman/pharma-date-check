@@ -21,16 +21,22 @@ interface LaboratorioDao {
     fun obtenerTodos(): Flow<List<Laboratorio>>
 
     /**
-     * Obtiene el nomobre del laboratorio por medio del Id
+     * Obtiene el nombre del laboratorio por medio del Id
      */
     @Query("SELECT nombre FROM laboratorios WHERE id = :id")
     fun obtenerNombreLaboratorio(id: Int): String?
 
     /**
-     * Obtiene una lista de items por medio dle operador "LIKE"
+     * Obtiene una lista de items por medio del operador "LIKE"
      */
     @Query("SELECT * FROM laboratorios WHERE nombre LIKE '%' || :query || '%'")
     fun buscarItems(query: String): Flow<List<Laboratorio>>
+
+    /**
+     * Obtiene el Id del laboratorio por medio del nombre
+     */
+    @Query("SELECT id FROM laboratorios WHERE nombre = :nombre")
+    suspend fun obtenerIdPorNombre(nombre: String): Int
 
     /**
      * Actualiza la información de un laboratorio.

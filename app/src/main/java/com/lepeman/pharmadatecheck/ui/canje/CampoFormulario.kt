@@ -17,6 +17,7 @@ import com.lepeman.pharmadatecheck.ui.theme.ColorBorde
 import com.lepeman.pharmadatecheck.ui.theme.ColorDim
 import com.lepeman.pharmadatecheck.ui.theme.ColorTexto
 import com.lepeman.pharmadatecheck.ui.theme.ColorVencido
+import java.time.LocalDate
 
 @Composable
 fun CampoFormulario(

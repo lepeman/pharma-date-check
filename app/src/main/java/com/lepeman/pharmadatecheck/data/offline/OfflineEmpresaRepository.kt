@@ -24,6 +24,16 @@ class OfflineEmpresaRepository(private val empresaDao: EmpresaDao) : EmpresaRepo
     override fun obtenerNombreEmpresa(id: Int): String = empresaDao.obtenerNombreEmpresa(id)
 
     /**
+     * Obtiene el Id de la empresa por medio del nombre
+     */
+    override fun obtenerIdPorNombre(razonSocial: String): Int = empresaDao.obtenerIdPorNombre(razonSocial)
+
+    /**
+     * Obtiene un flujo de datos con la lista de empresas que coincidan con la consulta.
+     */
+    override fun buscarItems(query: String): Flow<List<Empresa>> = empresaDao.buscarItems(query)
+
+    /**
      * Actualiza la información de una empresa en la base de datos local.
      */
     override suspend fun actualizar(empresa: Empresa) = empresaDao.actualizar(empresa)
