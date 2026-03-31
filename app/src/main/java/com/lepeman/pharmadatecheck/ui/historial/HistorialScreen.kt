@@ -87,8 +87,8 @@ fun HistorialScreen(
                 // Lista de sesiones
                 PantallaListaSesiones(
                     uiState = uiState,
-                    onSeleccionarSesion = {},
-                    onEliminarSesion = {}
+                    onSeleccionarSesion = viewModel::seleccionarSesion,
+                    onEliminarSesion = viewModel::solicitarEliminar
                 )
             }
         }

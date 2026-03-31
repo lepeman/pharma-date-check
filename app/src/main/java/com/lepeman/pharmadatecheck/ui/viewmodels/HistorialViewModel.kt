@@ -68,19 +68,49 @@ class HistorialViewModel(
         }
     }
 
+    fun solicitarEliminar(sesion: SesionRevision) {
+        _sesionAEliminar.value = sesion
+    }
+
+    fun confirmarEliminar() {
+        viewModelScope.launch {
+            _sesionAEliminar.value?.let { sesion ->
+                sesionRevisionRepository.eliminar(sesion)
+                _sesionAEliminar.value = null
+                cerrarDetalle()
+            }
+        }
+    }
+
+    fun cancelarEliminar() {
+        _sesionAEliminar.value = null
+    }
+
+    fun seleccionarSesion(sesion: SesionRevision) {
+        viewModelScope.launch {
+            _detalleState.value = DetalleSesionState.Cargando
+            productoRevisadoRepository.obtenerPorSesion(sesion.id).collect { productos ->
+                _detalleState.value = DetalleSesionState.Visible(
+                    sesion = sesion,
+                    productos = productos
+                )
+            }
+        }
+    }
+
     fun aplicarFiltroClasificacion() {}
 
     fun cerrarDetalle() {
-
+        _detalleState.value = DetalleSesionState.Cerrado
+        _filtroClasificacion.value = null
     }
 
-    fun seleccionarSesion() {}
+
 
     private fun filtrarProductos() {}
 
-    fun confirmarEliminar() {
-    }
 
-    fun cancelarEliminar() {}
+
+
 
 }

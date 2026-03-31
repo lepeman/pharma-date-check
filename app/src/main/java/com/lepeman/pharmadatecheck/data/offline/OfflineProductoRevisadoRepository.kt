@@ -19,6 +19,11 @@ class OfflineProductoRevisadoRepository(private val productoRevisadoDao: Product
     override fun obtenerTodos(): Flow<List<ProductoRevisado>> = productoRevisadoDao.obtenerTodos()
 
     /**
+     * Obtiene un flujo de datos con la lista de productos revisados asociados a una sesión específica.
+     */
+    override fun obtenerPorSesion(sesionId: Int): Flow<List<ProductoRevisado>> = productoRevisadoDao.obtenerPorSesion(sesionId)
+
+    /**
      * Actualiza la información de un registro de producto revisado en la base de datos local.
      */
     override suspend fun actualizar(productoRevisado: ProductoRevisado) = productoRevisadoDao.actualizar(productoRevisado)

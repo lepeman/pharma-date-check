@@ -7,6 +7,8 @@ interface ProductoRevisadoRepository {
 
     fun obtenerTodos(): Flow<List<ProductoRevisado>>
 
+    fun obtenerPorSesion(sesionId: Int): Flow<List<ProductoRevisado>>
+
     suspend fun actualizar(productoRevisado: ProductoRevisado)
 
     suspend fun insertar(productoRevisado: ProductoRevisado)

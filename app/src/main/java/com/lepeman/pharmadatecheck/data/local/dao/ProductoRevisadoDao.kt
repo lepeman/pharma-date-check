@@ -18,6 +18,12 @@ interface ProductoRevisadoDao {
      */
     @Query("SELECT * FROM productos_revisados")
     fun obtenerTodos(): Flow<List<ProductoRevisado>>
+
+    /**
+     * Obtiene todos los productos revisados de una sesión específica
+     */
+    @Query("SELECT * FROM productos_revisados WHERE sesionId = :sesionId")
+    fun obtenerPorSesion(sesionId: Int): Flow<List<ProductoRevisado>>
     
     /**
      * Actualiza un registro de revisión de producto.

@@ -47,7 +47,7 @@ fun TarjetaResultado(
         Clasificacion.VENCIDO   -> ColorVencido
     }
 
-    val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
+    val formatterMesAnio = DateTimeFormatter.ofPattern("MM/yyyy")
 
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -82,16 +82,25 @@ fun TarjetaResultado(
             FilaDato("Producto", resultado.producto.nombre)
             FilaDato("Laboratorio", resultado.nombreLaboratorio)
             FilaDato("EAN-13", resultado.producto.codigoEAN13)
-            FilaDato("Vencimiento", resultado.fechaVencimiento.format(formatter))
+            FilaDato("Vencimiento", resultado.fechaVencimiento.format(formatterMesAnio))
+
+            resultado.fechaLimiteCanje?.let { limite ->
+                FilaDato(
+                    etiqueta = "Límite canje",
+                    limite.format(formatterMesAnio),
+                    colorValor = ColorCanjeable
+                )
+            }
+
+            val anticipacion = when {
+                resultado.diasRestantes <= 0    -> "Vencido"
+                resultado.diasRestantes <= 30   -> "${resultado.diasRestantes} días"
+                else                            -> "${resultado.diasRestantes / 30} meses"
+            }
 
             FilaDato(
-                "Límite canje",
-                resultado.fechaVencimiento.format(formatter),
-                colorValor = ColorCanjeable
-            )
-            FilaDato(
-                "Anticipación canje",
-                "${resultado.fechaVencimiento} días"
+                etiqueta = "Tiempo Restante",
+                valor = "${resultado.fechaVencimiento} días"
             )
 
             HorizontalDivider(color = ColorBorde)

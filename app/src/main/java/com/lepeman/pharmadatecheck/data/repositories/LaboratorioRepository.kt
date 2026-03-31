@@ -10,7 +10,7 @@ interface LaboratorioRepository {
 
     fun obtenerTodos(): Flow<List<Laboratorio>>
 
-    fun obtenerNombrePorId(id: Int): String?
+    suspend fun obtenerNombrePorId(id: Int): String?
 
     fun buscarItems(query: String): Flow<List<Laboratorio>>
 

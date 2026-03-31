@@ -24,7 +24,7 @@ class OfflineLaboratorioRepository(private val laboratorioDao: LaboratorioDao) :
     /**
      * Obtiene un String correspondiente al nombre del laboratorio por medio del Id
      */
-    override fun obtenerNombrePorId(id: Int): String? = laboratorioDao.obtenerNombreLaboratorio(id)
+    override suspend fun obtenerNombrePorId(id: Int): String? = laboratorioDao.obtenerNombreLaboratorio(id)
 
     /**
      * Obtiene una lista de items de la tabla "laboratorios" por medio del operador "LIKE"

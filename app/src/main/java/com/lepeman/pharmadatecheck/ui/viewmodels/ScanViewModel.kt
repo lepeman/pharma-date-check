@@ -130,14 +130,14 @@ class ScanViewModel(
                 return@launch
             }
 
-            val laboratorio = laboratorioRepository.obtenerNombrePorId(producto.laboratorioId)
-
             _scanUiState.value = ScanUiState.Resultado(
                 ResultadoClasificacion(
                     producto = producto,
-                    nombreLaboratorio = laboratorio ?: "Laboratorio desconocido",
+                    nombreLaboratorio = laboratorioRepository.obtenerNombrePorId(producto.laboratorioId) ?: "Laboratorio desconocido",
                     fechaVencimiento = LocalDate.now(),
-                    clasificacion = Clasificacion.VIGENTE
+                    clasificacion = Clasificacion.VIGENTE,
+                    diasRestantes = 0,
+                    fechaLimiteCanje = null
                 )
             )
         }

@@ -24,7 +24,7 @@ interface LaboratorioDao {
      * Obtiene el nombre del laboratorio por medio del Id
      */
     @Query("SELECT nombre FROM laboratorios WHERE id = :id")
-    fun obtenerNombreLaboratorio(id: Int): String?
+    suspend fun obtenerNombreLaboratorio(id: Int): String?
 
     /**
      * Obtiene una lista de items por medio del operador "LIKE"

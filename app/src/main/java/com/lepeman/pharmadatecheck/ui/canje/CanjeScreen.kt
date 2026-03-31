@@ -72,10 +72,17 @@ fun CanjeScreen(
     val sugerenciasLaboratorios by viewModel.sugerenciasLaboratorios.collectAsState()
     val expandedLaboratorio by viewModel.expandedLaboratorio.collectAsState()
 
+    val textoMesUno by viewModel.textoMesUno.collectAsState()
+    val textoMesDos by viewModel.textoMesDos.collectAsState()
+    val textoMesTres by viewModel.textoMesTres.collectAsState()
+
     if (formulario is CanjeViewModel.FormularioState.Visible) {
         val form = formulario as CanjeViewModel.FormularioState.Visible
         DialogFormularioCanje(
             form = form,
+            textoMesUno = textoMesUno,
+            textoMesDos = textoMesDos,
+            textoMesTres = textoMesTres,
             sugerenciasEmpresas = sugerenciasEmpresas,
             expandedEmpresa = expandedEmpresa,
             onEmpresaChange = viewModel::onEmpresaChange,

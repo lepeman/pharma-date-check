@@ -98,6 +98,15 @@ class CanjeViewModel(
     private val _politicaAEliminar = MutableStateFlow<PoliticaCanje?>(null)
     val politicaAEliminar: StateFlow<PoliticaCanje?> = _politicaAEliminar.asStateFlow()
 
+    private val _textoMesUno = MutableStateFlow("")
+    val textoMesUno: StateFlow<String> = _textoMesUno.asStateFlow()
+
+    private val _textoMesDos = MutableStateFlow("")
+    val textoMesDos: StateFlow<String> = _textoMesDos.asStateFlow()
+
+    private val _textoMesTres = MutableStateFlow("")
+    val textoMesTres: StateFlow<String> = _textoMesTres.asStateFlow()
+
     init {
         cargarPoliticas()
     }
@@ -119,22 +128,33 @@ class CanjeViewModel(
     // ── Formulario ────────────────────────────────────────────────────────────
 
     fun abrirFormularioNuevo() {
+        _textoMesUno.value = ""
+        _textoMesDos.value = ""
+        _textoMesTres.value = ""
+
         _formulario.value = FormularioState.Visible()
     }
 
     fun abrirFormularioEdicion(politica: PoliticaCanje) {
-        _formulario.value = FormularioState.Visible(
-            politica = politica,
-            razonSocial = empresaRepository.obtenerNombreEmpresa(politica.laboratorioId),
-            laboratorio = laboratorioRepository.obtenerNombrePorId(politica.laboratorioId) ?: "",
-            vencimiento = politica.vencimiento,
-            mesUno = politica.mesUno,
-            mesDos = politica.mesDos,
-            mesTres = politica.mesTres,
-            errorEmpresa = null,
-            errorLaboratorio = null,
-            errorDias = null
-        )
+        viewModelScope.launch {
+            _textoMesUno.value = FormularioState.format(politica.mesUno)
+            _textoMesDos.value = FormularioState.format(politica.mesDos)
+            _textoMesTres.value = FormularioState.format(politica.mesTres)
+
+            _formulario.value = FormularioState.Visible(
+                politica = politica,
+                razonSocial = empresaRepository.obtenerNombreEmpresa(politica.laboratorioId),
+                laboratorio = laboratorioRepository.obtenerNombrePorId(politica.laboratorioId)
+                    ?: "",
+                vencimiento = politica.vencimiento,
+                mesUno = politica.mesUno,
+                mesDos = politica.mesDos,
+                mesTres = politica.mesTres,
+                errorEmpresa = null,
+                errorLaboratorio = null,
+                errorDias = null
+            )
+        }
     }
 
     fun cerrarFormulario() {
@@ -216,16 +236,19 @@ class CanjeViewModel(
     }
 
     fun onMesUnoChange(valor: String) {
+        _textoMesUno.value = valor
         val actual = _formulario.value as? FormularioState.Visible ?: return
         _formulario.value = actual.copy(mesUno = FormularioState.toDate(texto = valor))
     }
 
     fun onMesDosChange(valor: String) {
+        _textoMesDos.value = valor
         val actual = _formulario.value as? FormularioState.Visible ?: return
         _formulario.value = actual.copy(mesDos = FormularioState.toDate(texto = valor))
     }
 
     fun onMesTresChange(valor: String) {
+        _textoMesTres.value = valor
         val actual = _formulario.value as? FormularioState.Visible ?: return
         _formulario.value = actual.copy(mesTres = FormularioState.toDate(texto = valor))
     }
@@ -257,7 +280,7 @@ class CanjeViewModel(
             if (form.politica == null) {
                 politicaCanjeRepository.insertar(
                     PoliticaCanje(
-                        empresaId = empresaRepository.obtenerIdPorNombre(form.razonSocial.trim()),
+                        empresaId = empresaRepository.obtenerIdPorNombre(form.razonSocial.trim()) ?: 0,
                         laboratorioId = laboratorioRepository.obtenerIdPorNombre(form.laboratorio.trim()),
                         vencimiento = form.vencimiento,
                         mesUno = form.mesUno,
@@ -268,7 +291,7 @@ class CanjeViewModel(
             } else {
                 politicaCanjeRepository.actualizar(
                     form.politica.copy(
-                        empresaId = empresaRepository.obtenerIdPorNombre(form.razonSocial.trim()),
+                        empresaId = empresaRepository.obtenerIdPorNombre(form.razonSocial.trim()) ?: 0, // Laboratorio sin asignar
                         laboratorioId = laboratorioRepository.obtenerIdPorNombre(form.laboratorio.trim()),
                         vencimiento = form.vencimiento,
                         mesUno = form.mesUno,

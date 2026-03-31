@@ -129,7 +129,7 @@ class ConfigViewModel(
                     // Saltar encabezado y líneas vacías
                     if (index == 0 || linea.isBlank()) return@forEachIndexed
 
-                    val campos = linea.split(",").map { it.trim() }
+                    val campos = linea.split(";").map { it.trim() }
 
                     // Validar que tenga exactamente 3 columnas
                     if (campos.size < 3) return@forEachIndexed

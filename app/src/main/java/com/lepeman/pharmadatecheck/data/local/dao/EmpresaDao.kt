@@ -28,7 +28,7 @@ interface EmpresaDao {
     fun obtenerNombreEmpresa(id: Int): String
 
     @Query("SELECT id FROM empresas WHERE razonSocial = :razonSocial")
-    fun obtenerIdPorNombre(razonSocial: String): Int
+    suspend fun obtenerIdPorNombre(razonSocial: String): Int?
 
     /**
      * Obtiene una lista de items por medio del operador "LIKE"

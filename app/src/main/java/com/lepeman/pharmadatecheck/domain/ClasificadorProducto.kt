@@ -10,6 +10,8 @@ data class ResultadoClasificacion(
     val nombreLaboratorio: String,
     val fechaVencimiento: LocalDate,
     val clasificacion: Clasificacion,
+    val diasRestantes: Long,
+    val fechaLimiteCanje: LocalDate?
 )
 
 enum class Clasificacion {
@@ -27,6 +29,8 @@ object ClasificadorProducto {
         fechaActual: LocalDate = LocalDate.now()
     ): ResultadoClasificacion {
 
+        val diasRestantes = java.time.temporal.ChronoUnit.DAYS.between(fechaActual, fechaVencimiento)
+
         if (politica == null) {
             val clasificacion = if (fechaActual >= fechaVencimiento) {
                 Clasificacion.VENCIDO
@@ -37,18 +41,33 @@ object ClasificadorProducto {
                 producto = producto,
                 nombreLaboratorio = nombreLaboratorio,
                 fechaVencimiento = fechaVencimiento,
-                clasificacion = clasificacion
+                clasificacion = clasificacion,
+                diasRestantes = diasRestantes,
+                fechaLimiteCanje = null
             )
         }
 
         // Producto no sujeto a vencimiento
         if (!politica.vencimiento) {
-            return ResultadoClasificacion(producto, nombreLaboratorio,fechaVencimiento, Clasificacion.VIGENTE)
+            return ResultadoClasificacion(
+                producto = producto,
+                nombreLaboratorio = nombreLaboratorio,
+                fechaVencimiento = fechaVencimiento,
+                clasificacion = Clasificacion.VIGENTE,
+                diasRestantes = diasRestantes,
+                fechaLimiteCanje = null
+            )
         }
 
         // Producto vencido — pasa a merma
         if (fechaActual >= fechaVencimiento) {
-            return ResultadoClasificacion(producto, nombreLaboratorio,fechaVencimiento, Clasificacion.VENCIDO)
+            return ResultadoClasificacion(
+                producto = producto,
+                nombreLaboratorio = nombreLaboratorio,
+                fechaVencimiento = fechaVencimiento,
+                clasificacion = Clasificacion.VENCIDO,
+                diasRestantes = diasRestantes,
+                fechaLimiteCanje = null)
         }
 
         // Verificar si la fecha de vencimiento cae en algún mes de la política
@@ -59,11 +78,21 @@ object ClasificadorProducto {
             politica.mesTres?.let { YearMonth.from(it) }
         )
 
+        val fechaLimiteCanje = if (periodoVencimiento in mesesPolitica)
+            fechaVencimiento.withDayOfMonth(1) else null
+
         val clasificacion = if (periodoVencimiento in mesesPolitica)
             Clasificacion.CANJEABLE
         else
             Clasificacion.VIGENTE
 
-        return ResultadoClasificacion(producto, nombreLaboratorio, fechaVencimiento, clasificacion)
+        return ResultadoClasificacion(
+            producto = producto,
+            nombreLaboratorio = nombreLaboratorio,
+            fechaVencimiento = fechaVencimiento,
+            clasificacion = clasificacion,
+            diasRestantes = diasRestantes,
+            fechaLimiteCanje = fechaLimiteCanje
+        )
     }
 }

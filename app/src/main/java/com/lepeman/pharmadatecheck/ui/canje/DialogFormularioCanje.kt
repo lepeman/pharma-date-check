@@ -47,6 +47,10 @@ fun DialogFormularioCanje(
     onLaboratorioChange: (String) -> Unit,
     onLaboratorioSeleccionado: (Laboratorio) -> Unit,
     onExpandedLaboratorioChange: (Boolean) -> Unit,
+    // Fechas
+    textoMesUno: String,
+    textoMesDos: String,
+    textoMesTres: String,
     // Resto
     onVencimientoChange: (Boolean) -> Unit,
     onMesUnoChange: (String) -> Unit,
@@ -105,7 +109,7 @@ fun DialogFormularioCanje(
                 // Mes Uno
                 CampoFormulario(
                     label = "Mes 1",
-                    value = FormularioState.format(form.mesUno),
+                    value = textoMesUno,
                     onValueChange = onMesUnoChange,
                     placeholder = "Ej: 06/2026",
                     singleLine = false
@@ -113,7 +117,7 @@ fun DialogFormularioCanje(
 
                 CampoFormulario(
                     label = "Mes 2",
-                    value = FormularioState.format(form.mesDos),
+                    value = textoMesDos,
                     onValueChange = onMesDosChange,
                     placeholder = "Ej: 07/2026",
                     singleLine = false
@@ -121,7 +125,7 @@ fun DialogFormularioCanje(
 
                 CampoFormulario(
                     label = "Mes 3",
-                    value = FormularioState.format(form.mesTres),
+                    value = textoMesTres,
                     onValueChange = onMesTresChange,
                     placeholder = "Ej: 08/2026",
                     singleLine = false

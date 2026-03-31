@@ -27,14 +27,21 @@ fun CampoFormulario(
     error: String? = null,
     placeholder: String = "",
     keyboardType: KeyboardType = KeyboardType.Text,
-    singleLine: Boolean = true
+    singleLine: Boolean = true,
+    enabled: Boolean = true
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-        Text(label, color = ColorDim, fontSize = 11.sp, fontFamily = FontFamily.Monospace)
+        Text(
+            text = label,
+            color = if (enabled) ColorDim else ColorDim.copy(alpha = 0.4f),
+            fontSize = 12.sp,
+            fontFamily = FontFamily.Monospace
+        )
         OutlinedTextField(
             value = value,
             onValueChange = onValueChange,
             modifier = Modifier.fillMaxWidth(),
+            enabled = enabled,
             placeholder = {
                 Text(placeholder, color = ColorDim, fontSize = 12.sp,
                     fontFamily = FontFamily.Monospace)
