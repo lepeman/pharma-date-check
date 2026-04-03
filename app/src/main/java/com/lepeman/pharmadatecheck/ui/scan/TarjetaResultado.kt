@@ -18,21 +18,23 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.lepeman.pharmadatecheck.R
 import com.lepeman.pharmadatecheck.data.local.entities.Producto
-import com.lepeman.pharmadatecheck.data.repositories.LaboratorioRepository
 import com.lepeman.pharmadatecheck.domain.Clasificacion
 import com.lepeman.pharmadatecheck.domain.ResultadoClasificacion
 import com.lepeman.pharmadatecheck.ui.theme.ColorBorde
 import com.lepeman.pharmadatecheck.ui.theme.ColorCanjeable
 import com.lepeman.pharmadatecheck.ui.theme.ColorCard
-import com.lepeman.pharmadatecheck.ui.theme.ColorTexto
 import com.lepeman.pharmadatecheck.ui.theme.ColorVencido
 import com.lepeman.pharmadatecheck.ui.theme.ColorVigente
+import com.lepeman.pharmadatecheck.ui.theme.PharmaDateCheckTheme
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -53,7 +55,7 @@ fun TarjetaResultado(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = ColorCard),
         shape = RoundedCornerShape(12.dp),
-        border = BorderStroke(1.5.dp, color.copy(alpha = 0.5f))
+        border = BorderStroke(1.5.dp, ColorVigente.copy(alpha = 0.5f))
     ) {
         Column(
             modifier = Modifier.padding(16.dp),
@@ -87,20 +89,20 @@ fun TarjetaResultado(
             resultado.fechaLimiteCanje?.let { limite ->
                 FilaDato(
                     etiqueta = "Límite canje",
-                    limite.format(formatterMesAnio),
+                    valor = limite.format(formatterMesAnio),
                     colorValor = ColorCanjeable
                 )
             }
 
-            val anticipacion = when {
+            val tiempoRestante = when {
                 resultado.diasRestantes <= 0    -> "Vencido"
                 resultado.diasRestantes <= 30   -> "${resultado.diasRestantes} días"
                 else                            -> "${resultado.diasRestantes / 30} meses"
             }
 
             FilaDato(
-                etiqueta = "Tiempo Restante",
-                valor = "${resultado.fechaVencimiento} días"
+                etiqueta = stringResource(R.string.tiempo_restante),
+                valor = tiempoRestante
             )
 
             HorizontalDivider(color = ColorBorde)
@@ -110,17 +112,41 @@ fun TarjetaResultado(
                 onClick = onNuevoEscaneo,
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = ColorBorde,
-                    contentColor = ColorTexto
+                    containerColor = ColorVigente,
+                    contentColor = Color.White
                 ),
                 shape = RoundedCornerShape(8.dp)
             ) {
                 Text(
-                    "Nuevo escaneo",
+                    text = stringResource(R.string.nuevo_escaneo),
                     fontFamily = FontFamily.Monospace,
                     fontWeight = FontWeight.Bold
                 )
             }
+        }
+    }
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFF0F1117)
+@Composable
+fun TarjetaResultadoPreview() {
+    PharmaDateCheckTheme {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            // Ejemplo: Producto VIGENTE
+            TarjetaResultado(
+                resultado = ResultadoClasificacion(
+                    producto = Producto("7800000000012", "Paracetamol 500mg", 1),
+                    nombreLaboratorio = "Chile",
+                    fechaVencimiento = LocalDate.now().plusMonths(24),
+                    clasificacion = Clasificacion.VIGENTE,
+                    diasRestantes = 720,
+                    fechaLimiteCanje = null // Requerido por el constructor
+                ),
+                onNuevoEscaneo = {}
+            )
         }
     }
 }

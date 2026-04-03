@@ -2,21 +2,43 @@ package com.lepeman.pharmadatecheck.data.local.entities
 
 import androidx.room.Entity
 import androidx.room.ForeignKey
-import androidx.room.ForeignKey.Companion.CASCADE
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import java.time.LocalDate
 
 /**
- * Entidad que define la política de canje para un laboratorio específico.
+ * Entidad que define la política de canje vigente para un laboratorio específico.
  *
- * @property id Identificador único de la política (auto-generado).
- * @property empresaId Referencia a la empresa (dueña de la farmacia).
+ * Las políticas de canje son comunicadas periódicamente por los laboratorios
+ * como períodos de tres meses dentro de los cuales los productos con fecha de
+ * vencimiento comprendida en esos meses son elegibles para retiro y compensación.
+ * Esta entidad modela esa realidad mediante tres atributos de fecha opcionales
+ * ([mesUno], [mesDos], [mesTres]) que representan dichos meses.
+ *
+ * Convención de fechas: cada mes se almacena como un [LocalDate] con día fijo
+ * igual a 1 (por ejemplo, 01/06/2026 representa el mes de junio 2026). La
+ * interfaz de usuario muestra y solicita únicamente mes y año, ocultando este
+ * detalle de implementación al operador.
+ *
+ * La relación con [Empresa] y [Laboratorio] utiliza comportamiento CASCADE,
+ * de modo que al eliminar cualquiera de ellos se eliminan también las políticas
+ * asociadas. El motor de clasificación [ClasificadorProducto] consulta esta
+ * entidad para determinar si un producto escaneado es CANJEABLE.
+ *
+ * @property id Identificador único de la política, autoGenerado por Room.
+ * @property empresaId Referencia a la razón social del laboratorio que emite
+ * la política. Clave foránea hacia [Empresa] con onDelete CASCADE.
  * @property laboratorioId Referencia al laboratorio al que aplica la política.
- * @property vencimiento Indica si se permite canje por vencimiento (true) o no (false).
- * @property mesUno Fecha límite o hito 1 para la política de canje.
- * @property mesDos Fecha límite o hito 2 para la política de canje.
- * @property mesTres Fecha límite o hito 3 para la política de canje.
+ * Clave foránea hacia [Laboratorio] con onDelete CASCADE.
+ * @property vencimiento Indica si el laboratorio permite canje por vencimiento.
+ * Si es false, los productos de este laboratorio siempre clasifican como VIGENTE
+ * independientemente de su fecha de vencimiento.
+ * @property mesUno Primer mes del período de canje activo, con día fijo = 1.
+ * Null si no aplica o no ha sido configurado.
+ * @property mesDos Segundo mes del período de canje activo, con día fijo = 1.
+ * Null si no aplica o no ha sido configurado.
+ * @property mesTres Tercer mes del período de canje activo, con día fijo = 1.
+ * Null si no aplica o no ha sido configurado.
  */
 @Entity(
     tableName = "politicas_canje",
@@ -37,7 +59,8 @@ import java.time.LocalDate
     indices = [
         Index("empresaId"),
         Index("laboratorioId")
-    ])
+    ]
+)
 data class PoliticaCanje(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,

@@ -10,49 +10,61 @@ import com.lepeman.pharmadatecheck.data.local.entities.Auxiliar
 import kotlinx.coroutines.flow.Flow
 
 /**
- * Interfaz de acceso a datos (DAO) para la entidad [Auxiliar].
- * Proporciona métodos para interactuar con la tabla 'auxiliares' en la base de datos.
+ * DAO para la entidad [Auxiliar].
+ *
+ * Provee acceso a la tabla "auxiliares" de la base de datos local.
+ * Las operaciones de escritura son suspendidas para ejecutarse fuera
+ * del hilo principal. Las consultas reactivas retornan [Flow] y se
+ * actualizan automáticamente ante cambios en la tabla.
  */
 @Dao
 interface AuxiliarDao {
+
     /**
-     * Obtiene todos los auxiliares registrados en un flujo de datos reactivo.
+     * Retorna todos los auxiliares registrados como flujo reactivo.
+     * Se actualiza automáticamente cuando la tabla cambia.
      */
     @Query("SELECT * FROM auxiliares")
     fun obtenerTodos(): Flow<List<Auxiliar>>
 
     /**
-     * Obtiene un auxiliar por medio del Id
+     * Retorna el auxiliar con el [id] indicado, o null si no existe.
      */
     @Query("SELECT * FROM auxiliares WHERE id = :id")
     suspend fun obtenerAuxiliar(id: Int): Auxiliar?
 
     /**
-     * Obtiene un auxiliar por medio del RUT
+     * Retorna el auxiliar cuyo RUT coincide con [rut], o null si no existe.
+     * Usado por el mecanismo de autenticación al inicio de cada sesión.
      */
     @Query("SELECT * FROM auxiliares WHERE rutAuxiliar = :rut")
     suspend fun obtenerAuxiliarPorRut(rut: String): Auxiliar?
 
     /**
-     * Obtiene el nombre del auxiliar por el Id
+     * Retorna el nombre completo del auxiliar con el [id] indicado,
+     * o null si no existe. Usado por [HistorialViewModel] para resolver
+     * el nombre a mostrar en las tarjetas de sesión.
      */
     @Query("SELECT nombreAuxiliar FROM auxiliares WHERE id = :id")
     suspend fun obtenerNombrePorId(id: Int): String?
 
     /**
-     * Actualiza la información de un auxiliar existente.
+     * Actualiza los datos de un auxiliar existente en la base de datos.
      */
     @Update
     suspend fun actualizar(auxiliar: Auxiliar)
 
     /**
-     * Inserta un nuevo auxiliar en la base de datos.
+     * Inserta un auxiliar. Si ya existe un registro con el mismo id,
+     * la operación se ignora (IGNORE).
      */
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertar(auxiliar: Auxiliar)
 
     /**
-     * Registra una lista de nuevos auxiliares
+     * Inserta una lista de auxiliares de forma masiva. Usado durante
+     * el prepoblado inicial de la base de datos en [AppDatabase].
+     * Los registros duplicados se ignoran (IGNORE).
      */
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertarTodosLosAuxiliares(list: List<Auxiliar>)

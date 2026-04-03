@@ -26,7 +26,7 @@ class HistorialViewModel(
         object Cargando : UiState()
         object Vacio : UiState()
         data class ConDatos(
-            val sesiones: List<SesionRevision>
+            val sesiones: List<SesionConNombre>
         ) : UiState()
         data class Error(val mensaje: String) : UiState()
     }
@@ -40,11 +40,19 @@ class HistorialViewModel(
         ) : DetalleSesionState()
     }
 
+    data class SesionConNombre(
+        val sesion: SesionRevision,
+        val nombreAuxiliar: String
+    )
+
     private val _uiState = MutableStateFlow<UiState>(UiState.Cargando)
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
 
     private val _detalleState = MutableStateFlow<DetalleSesionState>(DetalleSesionState.Cerrado)
     val detalleState: StateFlow<DetalleSesionState> = _detalleState.asStateFlow()
+
+    private val _sesiones = MutableStateFlow<List<SesionConNombre>>(emptyList())
+    val sesiones: StateFlow<List<SesionConNombre>> = _sesiones.asStateFlow()
 
     private val _filtroClasificacion = MutableStateFlow<String?>(null)
     val filtroClasificacion: StateFlow<String?> = _filtroClasificacion.asStateFlow()
@@ -59,10 +67,16 @@ class HistorialViewModel(
     private fun cargarSesiones() {
         viewModelScope.launch {
             sesionRevisionRepository.obtenerTodas().collect { sesiones ->
-                _uiState.value = if (sesiones.isEmpty()) {
+                val conNombres = sesiones.map { sesion ->
+                    val nombre = auxiliarRepository.obtenerAuxiliarPorId(sesion.auxiliarId)
+                        ?.nombreAuxiliar ?: "Auxiliar #${sesion.auxiliarId}"
+                    SesionConNombre(sesion = sesion, nombreAuxiliar = nombre)
+                }
+                _sesiones.value = conNombres
+                _uiState.value = if (conNombres.isEmpty()) {
                     UiState.Vacio
                 } else {
-                    UiState.ConDatos(sesiones)
+                    UiState.ConDatos(conNombres)
                 }
             }
         }

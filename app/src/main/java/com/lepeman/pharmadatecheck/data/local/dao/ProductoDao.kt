@@ -10,37 +10,48 @@ import com.lepeman.pharmadatecheck.data.local.entities.Producto
 import kotlinx.coroutines.flow.Flow
 
 /**
- * Interfaz de acceso a datos (DAO) para la entidad [Producto].
+ * DAO para la entidad [Producto].
+ *
+ * Provee acceso a la tabla "productos" de la base de datos local.
+ * Las operaciones de escritura son suspendidas para ejecutarse fuera
+ * del hilo principal. Las consultas reactivas retornan [Flow] y se
+ * actualizan automáticamente ante cambios en la tabla.
  */
 @Dao
 interface ProductoDao {
+
     /**
-     * Obtiene el listado completo de productos en un flujo reactivo.
+     * Retorna el catálogo completo de productos como flujo reactivo.
+     * Se actualiza automáticamente cuando la tabla cambia.
      */
     @Query("SELECT * FROM productos")
     fun obtenerTodos(): Flow<List<Producto>>
 
     /**
-     * Se obtiene un producto por medio de su código EAN13
+     * Retorna el producto cuyo código EAN-13 coincide con [EAN13],
+     * o null si no existe. Usado por [ScanViewModel] para identificar
+     * el producto escaneado antes de clasificarlo.
      */
     @Query("SELECT * FROM productos WHERE codigoEAN13 = :EAN13")
     suspend fun buscarPorEAN13(EAN13: String): Producto?
 
     /**
-     * Actualiza la información de un producto.
+     * Actualiza los datos de un producto existente en la base de datos.
      */
     @Update
     suspend fun actualizar(producto: Producto)
 
     /**
-     * Inserta un nuevo producto en el catálogo.
+     * Inserta un producto. Si ya existe un registro con el mismo
+     * codigoEAN13, la operación se ignora (IGNORE).
      */
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertar(producto: Producto)
 
     /**
-     * Inserta una lista de items en la tabla "productos", y si algún item existe,
-     * simplemente lo ignora.
+     * Inserta una lista de productos de forma masiva. Usado en la
+     * importación desde CSV en la pantalla de configuración. Los
+     * registros duplicados se ignoran (IGNORE).
      */
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertarProductos(productos: List<Producto>)
@@ -52,7 +63,9 @@ interface ProductoDao {
     suspend fun eliminar(producto: Producto)
 
     /**
-     * Entrega la cantidad de items que hay en la tabla "productos"
+     * Retorna la cantidad total de productos registrados en la tabla.
+     * Usado por [OfflineProductoRepository] para calcular el número de
+     * registros efectivamente importados tras una operación de carga CSV.
      */
     @Query("SELECT COUNT(*) FROM productos")
     suspend fun contarProductos(): Int

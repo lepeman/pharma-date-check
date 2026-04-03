@@ -25,8 +25,14 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 /**
- * Base de datos principal de la aplicación utilizando Room.
- * Define las entidades que componen la base de datos y proporciona acceso a los DAOs.
+ * Base de datos principal de la aplicación, implementada con Room.
+ *
+ * Declara las siete entidades del modelo de datos y registra los conversores
+ * de tipos necesarios para almacenar [java.time.LocalDate] y
+ * [java.time.LocalDateTime] en SQLite. Al crearse por primera vez, ejecuta
+ * automáticamente el prepoblado de laboratorios, empresas y auxiliares
+ * mediante [AppDatabaseCallback], dejando la aplicación en estado operativo
+ * desde el primer arranque sin intervención del usuario.
  */
 @Database(
     entities = [
@@ -41,10 +47,9 @@ import kotlinx.coroutines.launch
     version = 1,
     exportSchema = false
 )
-@TypeConverters(Converters::class) // Utiliza conversores para tipos de datos complejos (como LocalDateTime)
+@TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
 
-    // Métodos abstractos para obtener las interfaces de acceso a datos (DAOs)
     abstract fun auxiliarDao(): AuxiliarDao
     abstract fun productoDao(): ProductoDao
     abstract fun empresaDao(): EmpresaDao
@@ -54,12 +59,21 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun sesionRevisionDao(): SesionRevisionDao
 
     companion object {
+
+        // Volatile garantiza que los cambios sobre INSTANCE sean visibles
+        // inmediatamente a todos los hilos, evitando instancias duplicadas.
         @Volatile
         private var INSTANCE: AppDatabase? = null
 
         /**
-         * Obtiene la instancia única de la base de datos (Patrón Singleton).
-         * Si la base de datos no existe, se crea utilizando Room.databaseBuilder.
+         * Retorna la instancia única de la base de datos (patrón Singleton).
+         *
+         * Si la instancia no existe, la crea con [Room.databaseBuilder] dentro
+         * de un bloque sincronizado para prevenir condiciones de carrera en
+         * entornos multihilo.
+         *
+         * @param context Contexto de la aplicación para localizar el archivo
+         * de base de datos en el almacenamiento del dispositivo.
          */
         fun getDatabase(context: Context): AppDatabase {
             return INSTANCE ?: synchronized(this) {
@@ -68,8 +82,6 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "vencimientos_farmacia.db"
                 )
-                    // Política de migración destructiva (opcional: borrar y recrear si cambia la versión)
-                    // .fallbackToDestructiveMigration()
                     .addCallback(AppDatabaseCallback(context))
                     .build()
                 INSTANCE = instance
@@ -77,12 +89,22 @@ abstract class AppDatabase : RoomDatabase() {
             }
         }
 
+        /**
+         * Callback que se ejecuta una única vez cuando la base de datos es
+         * creada por primera vez en el dispositivo.
+         *
+         * Aprovecha el evento [onCreate] para insertar los datos iniciales
+         * necesarios para la operación de la aplicación: catálogo de
+         * laboratorios, razones sociales (empresas) y auxiliares de farmacia
+         * habilitados. La inserción se realiza en el dispatcher IO para no
+         * bloquear el hilo principal.
+         */
         private class AppDatabaseCallback(
-            private val context:Context
+            private val context: Context
         ) : RoomDatabase.Callback() {
+
             override fun onCreate(db: SupportSQLiteDatabase) {
                 super.onCreate(db)
-
                 INSTANCE?.let { database ->
                     CoroutineScope(Dispatchers.IO).launch {
                         prepoblarDatos(database)
@@ -90,53 +112,57 @@ abstract class AppDatabase : RoomDatabase() {
                 }
             }
 
-            suspend fun prepoblarDatos(db: AppDatabase) {
-                val laboratorioDao = db.laboratorioDao()
-                val listaLaboratorios = listOf(
+            /**
+             * Inserta los datos iniciales en las tablas de laboratorios,
+             * empresas y auxiliares.
+             *
+             * Estos datos corresponden al catálogo base de la sucursal CV105
+             * de Farmacias Cruz Verde y deben mantenerse actualizados conforme
+             * se incorporen nuevos laboratorios, razones sociales o personal
+             * al establecimiento.
+             *
+             * @param db Instancia de [AppDatabase] ya inicializada por Room.
+             */
+            private suspend fun prepoblarDatos(db: AppDatabase) {
+
+                // ── Laboratorios ──────────────────────────────────────────────
+                db.laboratorioDao().insertarTodosLosLaboratorios(listOf(
                     Laboratorio(id = 1, nombre = "CHILE RECETARIO"),
                     Laboratorio(id = 2, nombre = "CHILEMARCAS"),
                     Laboratorio(id = 3, nombre = "BAYER POPULAR"),
                     Laboratorio(id = 4, nombre = "RECALCINE"),
                     Laboratorio(id = 5, nombre = "ASSISTANCE")
-                )
+                ))
 
-                laboratorioDao.insertarTodosLosLaboratorios(listaLaboratorios)
+                // ── Empresas (razones sociales) ───────────────────────────────
+                db.empresaDao().insertarTodasLasEmpresas(listOf(
+                    Empresa(id = 1,  razonSocial = "PHARMATRADE S.A."),
+                    Empresa(id = 2,  razonSocial = "BAYER S.A."),
+                    Empresa(id = 3,  razonSocial = "ABBOT LABORATORIES DE CHILE S.A."),
+                    Empresa(id = 4,  razonSocial = "LABORATORIOS RECALCINE S.A."),
+                    Empresa(id = 5,  razonSocial = "SOCIEDAD COMERCIAL ASSITANCE OTC CHILE LTDA."),
+                    Empresa(id = 6,  razonSocial = "LABORATORIOS SAVAL S.A."),
+                    Empresa(id = 7,  razonSocial = "ASTRAZENECA S.A."),
+                    Empresa(id = 8,  razonSocial = "NOVARTIS CHILE S.A."),
+                    Empresa(id = 9,  razonSocial = "NOVOFARMA SERVICE S.A."),
+                    Empresa(id = 10, razonSocial = "MERCK S.A."),
+                    Empresa(id = 11, razonSocial = "CHEMOPHARMA S.A."),
+                    Empresa(id = 12, razonSocial = "INSTITUTO SANITAS S.A.")
+                ))
 
-                val empresaDao = db.empresaDao()
-                val listaEmpresas = listOf(
-                    Empresa(id = 1, razonSocial="PHARMATRADE S.A."),
-                    Empresa(id = 2, razonSocial="BAYER S.A."),
-                    Empresa(id = 3, razonSocial="ABBOT LABORATORIES DE CHILE S.A."),
-                    Empresa(id = 4, razonSocial="LABORATORIOS RECALCINE S.A."),
-                    Empresa(id = 5, razonSocial="SOCIEDAD COMERCIAL ASSITANCE OTC CHILE LTDA."),
-                    Empresa(id = 6, razonSocial="LABORATORIOS SAVAL S.A."),
-                    Empresa(id = 7, razonSocial="ASTRAZENECA S.A."),
-                    Empresa(id = 8, razonSocial="NOVARTIS CHILE S.A."),
-                    Empresa(id = 9, razonSocial="NOVOFARMA SERVICE S.A."),
-                    Empresa(id = 10, razonSocial="MERCK S.A."),
-                    Empresa(id = 11, razonSocial="CHEMOPHARMA S.A."),
-                    Empresa(id = 12, razonSocial="INSTITUTO SANITAS S.A.")
-                )
-                
-                empresaDao.insertarTodasLasEmpresas(listaEmpresas)
-
-                val auxiliarDao = db.auxiliarDao()
-                val listaAuxiliares = listOf(
-                    Auxiliar(1, "Juan Pérez", "123456789"),
-                    Auxiliar(2, "María González", "15672341k"),
-                    Auxiliar(3, "Carlos Muñoz", "189012345"),
-                    Auxiliar(4, "Ana Silva", "104328767"),
-                    Auxiliar(5, "Roberto Tapia", "145567890"),
-                    Auxiliar(6, "Elena Morales", "172234456"),
-                    Auxiliar(7, "Pedro Soto", "98765432"),
-                    Auxiliar(8, "Lucía Herrera", "201123341"),
-                    Auxiliar(9, "Luis Ortega", "151748309")
-                )
-
-                auxiliarDao.insertarTodosLosAuxiliares(listaAuxiliares)
-                
+                // ── Auxiliares de farmacia ────────────────────────────────────
+                db.auxiliarDao().insertarTodosLosAuxiliares(listOf(
+                    Auxiliar(id = 1, nombreAuxiliar = "Juan Pérez",     rutAuxiliar = "123456789"),
+                    Auxiliar(id = 2, nombreAuxiliar = "María González", rutAuxiliar = "15672341k"),
+                    Auxiliar(id = 3, nombreAuxiliar = "Carlos Muñoz",   rutAuxiliar = "189012345"),
+                    Auxiliar(id = 4, nombreAuxiliar = "Ana Silva",      rutAuxiliar = "104328767"),
+                    Auxiliar(id = 5, nombreAuxiliar = "Roberto Tapia",  rutAuxiliar = "145567890"),
+                    Auxiliar(id = 6, nombreAuxiliar = "Elena Morales",  rutAuxiliar = "172234456"),
+                    Auxiliar(id = 7, nombreAuxiliar = "Pedro Soto",     rutAuxiliar = "98765432"),
+                    Auxiliar(id = 8, nombreAuxiliar = "Lucía Herrera",  rutAuxiliar = "201123341"),
+                    Auxiliar(id = 9, nombreAuxiliar = "Luis Ortega",    rutAuxiliar = "151748309")
+                ))
             }
-
         }
     }
 }

@@ -32,8 +32,8 @@ import androidx.navigation.NavController
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.lepeman.pharmadatecheck.PharmaTopAppBar
 import com.lepeman.pharmadatecheck.R
+import com.lepeman.pharmadatecheck.ui.PharmaBottomAppBar
 import com.lepeman.pharmadatecheck.ui.config.ConfigDestination
 import com.lepeman.pharmadatecheck.ui.navigation.PharmaNavigation
 import com.lepeman.pharmadatecheck.ui.theme.ColorBorde
@@ -112,7 +112,7 @@ fun CanjeScreen(
 
     Scaffold(
         bottomBar = {
-            PharmaTopAppBar(
+            PharmaBottomAppBar(
                 canjeSelected = rutaActual?.hierarchy?.any { it.route == CanjeDestination.route } == true,
                 navigateToScan = navigateToScan,
                 navigateToHistorial = navigateToHistorial,

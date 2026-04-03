@@ -74,11 +74,12 @@ fun PantallaListaSesiones(
             }
             is HistorialViewModel.UiState.ConDatos -> {
                 LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    items(items = uiState.sesiones, key = { it.id }) { sesion ->
+                    items(items = uiState.sesiones, key = { it.sesion.id }) { item ->
                         TarjetaSesion(
-                            sesion = sesion,
-                            onClick = { onSeleccionarSesion(sesion) },
-                            onEliminar = { onEliminarSesion(sesion) }
+                            sesion = item.sesion,
+                            nombreAuxiliar = item.nombreAuxiliar,
+                            onClick = { onSeleccionarSesion(item.sesion) },
+                            onEliminar = { onEliminarSesion(item.sesion) }
                         )
                     }
                 }

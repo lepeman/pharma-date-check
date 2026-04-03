@@ -1,6 +1,7 @@
 package com.lepeman.pharmadatecheck.ui.scan
 
 import android.app.Activity
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -23,6 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -36,7 +38,9 @@ import androidx.core.view.WindowInsetsCompat
 import com.lepeman.pharmadatecheck.ui.theme.ColorBorde
 import com.lepeman.pharmadatecheck.ui.theme.ColorCard
 import com.lepeman.pharmadatecheck.ui.theme.ColorDim
+import com.lepeman.pharmadatecheck.ui.theme.ColorFondo
 import com.lepeman.pharmadatecheck.ui.theme.ColorTexto
+import com.lepeman.pharmadatecheck.ui.theme.ColorVigente
 
 // ── Zona de escaneo ───────────────────────────────────────────────────────────
 @Composable
@@ -60,9 +64,12 @@ fun ZonaEscaneo(
     }
 
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 12.dp),
         colors = CardDefaults.cardColors(containerColor = ColorCard),
-        shape = RoundedCornerShape(12.dp)
+        shape = RoundedCornerShape(12.dp),
+        border = BorderStroke(1.5.dp, ColorVigente.copy(alpha = 0.5F))
     ) {
         Column(
             modifier = Modifier.padding(16.dp),
@@ -109,8 +116,8 @@ fun ZonaEscaneo(
                 Button(
                     onClick = onConfirmarManual,
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = ColorBorde,
-                        contentColor = ColorTexto
+                        containerColor = ColorVigente,
+                        contentColor = Color.White
                     ),
                     shape = RoundedCornerShape(8.dp)
                 ) {
@@ -121,7 +128,7 @@ fun ZonaEscaneo(
     }
 }
 
-@Preview
+@Preview(showBackground = true, backgroundColor = 0xFFFFFFFF)
 @Composable
 fun ZonaEscaneoPreview() {
     ZonaEscaneo(

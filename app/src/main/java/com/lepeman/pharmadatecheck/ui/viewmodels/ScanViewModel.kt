@@ -1,15 +1,11 @@
 package com.lepeman.pharmadatecheck.ui.viewmodels
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.lepeman.pharmadatecheck.data.local.entities.ProductoRevisado
 import com.lepeman.pharmadatecheck.data.repositories.AuxiliarRepository
-import com.lepeman.pharmadatecheck.data.repositories.EmpresaRepository
 import com.lepeman.pharmadatecheck.data.repositories.LaboratorioRepository
 import com.lepeman.pharmadatecheck.data.repositories.PoliticaCanjeRepository
 import com.lepeman.pharmadatecheck.data.repositories.ProductoRepository
-import com.lepeman.pharmadatecheck.data.repositories.ProductoRevisadoRepository
 import com.lepeman.pharmadatecheck.data.repositories.SesionRevisionRepository
 import com.lepeman.pharmadatecheck.domain.Clasificacion
 import com.lepeman.pharmadatecheck.domain.ClasificadorProducto
@@ -19,15 +15,12 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.time.LocalDate
-import java.time.LocalDateTime
 
 class ScanViewModel(
     private val auxiliarRepository: AuxiliarRepository,
-    private val empresaRepository: EmpresaRepository,
     private val laboratorioRepository: LaboratorioRepository,
     private val productoRepository: ProductoRepository,
     private val politicaCanjeRepository: PoliticaCanjeRepository,
-    private val productoRevisadoRepository: ProductoRevisadoRepository,
     private val sesionRevisionRepository: SesionRevisionRepository
 ) : ViewModel() {
 

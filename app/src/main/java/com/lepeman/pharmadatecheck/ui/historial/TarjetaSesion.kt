@@ -42,6 +42,7 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun TarjetaSesion(
     sesion: SesionRevision,
+    nombreAuxiliar: String,
     onClick: () -> Unit,
     onEliminar: () -> Unit
 ) {
@@ -63,7 +64,7 @@ fun TarjetaSesion(
             ) {
                 Column {
                     Text(
-                        text = sesion.auxiliarId.toString(),
+                        text = nombreAuxiliar,
                         color = ColorTexto,
                         fontWeight = FontWeight.Bold,
                         fontSize = 14.sp,
@@ -97,7 +98,7 @@ fun TarjetaSesion(
                 ChipResumen(stringResource(R.string.texto_vigentes), sesion.totalVigentes, ColorVigente)
                 ChipResumen(stringResource(R.string.texto_canjeables), sesion.totalVigentes, ColorCanjeable)
                 ChipResumen(stringResource(R.string.texto_vencidos), sesion.totalVigentes, ColorVencido)
-                ChipResumen(stringResource(R.string.texto_total), sesion.totalVigentes, ColorTexto)
+                ChipResumen(stringResource(R.string.texto_total), total, ColorTexto)
             }
 
             sesion.fechaTermino?.let { fin ->

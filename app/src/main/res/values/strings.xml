@@ -6,7 +6,7 @@
     <string name="sin_politicas">No hay políticas de canje registradas.</string>
     <string name="cargar_laboratorios">Cargar laboratorios frecuentes</string>
     <string name="nueva_politica">Nueva Política</string>
-    <string name="inicio_sesion">Iniciar sesión de revisión</string>
+    <string name="inicio_sesion">Iniciar sesión\nde revisión</string>
     <string name="campo_fecha_vencimiento">Fecha de vencimiento</string>
     <string name="indicaciones">Ingrese la fecha impresa en el empaque</string>
     <string name="scan_screen">Escaneo</string>
@@ -28,4 +28,6 @@
     <string name="historial_revisiones">Historial de Revisiones</string>
     <string name="editar_politica">Editar Política de Canje</string>
     <string name="advertencia_laboratorio">El nombre del laboratorio es obligatorio.</string>
+    <string name="nuevo_escaneo">Nuevo Escaneo</string>
+    <string name="tiempo_restante">Tiempo Restante</string>
 </resources>

@@ -18,63 +18,50 @@ import com.lepeman.pharmadatecheck.data.repositories.ProductoRevisadoRepository
 import com.lepeman.pharmadatecheck.data.repositories.SesionRevisionRepository
 
 /**
- * Implementación del contenedor de dependencias [AppContainer] para la aplicación.
+ * Implementación concreta de [AppContainer].
  *
- * Esta clase se encarga de instanciar y proveer los repositorios necesarios para el manejo de datos,
- * utilizando implementaciones "Offline" que interactúan directamente con la base de datos local Room.
- * Se utiliza el patrón "Lazy loading" para asegurar que los repositorios solo se instancien cuando sea necesario.
+ * Instancia cada repositorio mediante su implementación offline correspondiente,
+ * conectándola al DAO provisto por [AppDatabase]. La inicialización es diferida
+ * (lazy), por lo que cada repositorio se crea únicamente la primera vez que es
+ * accedido, reduciendo el tiempo de arranque de la aplicación.
  *
- * @property context El contexto de la aplicación necesario para inicializar la base de datos.
+ * @param context Contexto de la aplicación, requerido por [AppDatabase] para
+ * localizar o crear el archivo de base de datos en el almacenamiento del dispositivo.
  */
-class AppDataContainer(private val context: Context): AppContainer {
+class AppDataContainer(private val context: Context) : AppContainer {
 
-    /**
-     * Repositorio para la gestión de auxiliares de farmacia.
-     */
+    /** Acceso a auxiliares de farmacia registrados en el sistema. */
     override val auxiliarRepository: AuxiliarRepository by lazy {
         OfflineAuxiliarRepository(AppDatabase.getDatabase(context).auxiliarDao())
     }
 
-    /**
-     * Repositorio para la gestión de la información de la empresa.
-     */
+    /** Acceso a razones sociales (empresas) asociadas a los laboratorios. */
     override val empresaRepository: EmpresaRepository by lazy {
         OfflineEmpresaRepository(AppDatabase.getDatabase(context).empresaDao())
     }
 
-    /**
-     * Repositorio para la gestión de laboratorios farmacéuticos.
-     */
+    /** Acceso al catálogo de laboratorios farmacéuticos. */
     override val laboratorioRepository: LaboratorioRepository by lazy {
         OfflineLaboratorioRepository(AppDatabase.getDatabase(context).laboratorioDao())
     }
 
-    /**
-     * Repositorio para la gestión del catálogo de productos.
-     */
+    /** Acceso al catálogo de productos farmacéuticos. */
     override val productoRepository: ProductoRepository by lazy {
         OfflineProductoRepository(AppDatabase.getDatabase(context).productoDao())
     }
 
-    /**
-     * Repositorio para la gestión de las políticas de canje por laboratorio.
-     */
+    /** Acceso a las políticas de canje configuradas por laboratorio. */
     override val politicaCanjeRepository: PoliticaCanjeRepository by lazy {
         OfflinePoliticaCanjeRepository(AppDatabase.getDatabase(context).politicaCanjeDao())
     }
 
-    /**
-     * Repositorio para la gestión de los productos que ya han sido revisados.
-     */
+    /** Acceso al registro de productos revisados agrupados por sesión. */
     override val productoRevisadoRepository: ProductoRevisadoRepository by lazy {
         OfflineProductoRevisadoRepository(AppDatabase.getDatabase(context).productoRevisadoDao())
     }
 
-    /**
-     * Repositorio para la gestión de las sesiones de revisión de inventario.
-     */
+    /** Acceso a las sesiones de revisión de inventario. */
     override val sesionRevisionRepository: SesionRevisionRepository by lazy {
         OfflineSesionRevisionRepository(AppDatabase.getDatabase(context).sesionRevisionDao())
     }
-
 }

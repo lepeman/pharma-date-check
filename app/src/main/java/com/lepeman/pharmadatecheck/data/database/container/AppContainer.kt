@@ -9,31 +9,36 @@ import com.lepeman.pharmadatecheck.data.repositories.ProductoRevisadoRepository
 import com.lepeman.pharmadatecheck.data.repositories.SesionRevisionRepository
 
 /**
- * Interfaz que define el contenedor de dependencias de la aplicación.
- * 
- * Actúa como un punto central para acceder a todos los repositorios de datos,
- * permitiendo una gestión organizada de las dependencias y facilitando la
- * inyección de las mismas en los ViewModels.
+ * Contrato del contenedor de dependencias de la aplicación.
+ *
+ * Define el punto de acceso centralizado a todos los repositorios de datos.
+ * La implementación concreta [AppDataContainer] instancia cada repositorio
+ * con inicialización diferida (lazy), de modo que solo se crean cuando son
+ * requeridos por primera vez.
+ *
+ * Los ViewModels acceden a estas dependencias a través de [AppViewModelProvider],
+ * sin instanciar repositorios directamente.
  */
 interface AppContainer {
-    /** Repositorio para la gestión de auxiliares. */
+
+    /** Repositorio para la gestión de auxiliares de farmacia. */
     val auxiliarRepository: AuxiliarRepository
-    
-    /** Repositorio para la gestión de la información de la empresa. */
+
+    /** Repositorio para la gestión de razones sociales (empresas). */
     val empresaRepository: EmpresaRepository
-    
-    /** Repositorio para la gestión de laboratorios. */
+
+    /** Repositorio para la gestión del catálogo de laboratorios. */
     val laboratorioRepository: LaboratorioRepository
-    
-    /** Repositorio para la gestión del catálogo de productos. */
+
+    /** Repositorio para la gestión del catálogo de productos farmacéuticos. */
     val productoRepository: ProductoRepository
-    
-    /** Repositorio para la gestión de las políticas de canje. */
+
+    /** Repositorio para la gestión de políticas de canje por laboratorio. */
     val politicaCanjeRepository: PoliticaCanjeRepository
-    
-    /** Repositorio para la gestión de productos revisados. */
+
+    /** Repositorio para el registro de productos revisados por sesión. */
     val productoRevisadoRepository: ProductoRevisadoRepository
-    
-    /** Repositorio para la gestión de las sesiones de revisión. */
+
+    /** Repositorio para la gestión de sesiones de revisión de inventario. */
     val sesionRevisionRepository: SesionRevisionRepository
 }
