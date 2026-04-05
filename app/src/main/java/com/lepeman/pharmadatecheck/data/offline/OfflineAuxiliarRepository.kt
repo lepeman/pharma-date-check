@@ -6,45 +6,42 @@ import com.lepeman.pharmadatecheck.data.repositories.AuxiliarRepository
 import kotlinx.coroutines.flow.Flow
 
 /**
- * Implementación offline del repositorio para la gestión de auxiliares.
- * Utiliza [AuxiliarDao] como fuente de datos persistente local.
+ * Implementación offline de [AuxiliarRepository].
  *
- * @property auxiliarDao El DAO para acceder a la tabla de auxiliares.
+ * Delega todas las operaciones directamente a [AuxiliarDao], que accede
+ * a la tabla "auxiliares" de la base de datos local Room. Al ser una
+ * implementación offline, no realiza llamadas a servicios remotos ni
+ * lógica adicional más allá de la delegación al DAO.
+ *
+ * @property auxiliarDao DAO para acceder a la tabla "auxiliares".
  */
 class OfflineAuxiliarRepository(private val auxiliarDao: AuxiliarDao) : AuxiliarRepository {
-    
-    /**
-     * Obtiene un flujo de datos con la lista de todos los auxiliares.
-     */
-    override fun obtenerTodosStream(): Flow<List<Auxiliar>> = auxiliarDao.obtenerTodos()
 
-    /**
-     * Obtiene un auxiliar por medio del Id
-     */
-    override suspend fun obtenerAuxiliarPorId(id: Int): Auxiliar? = auxiliarDao.obtenerAuxiliar(id)
+    /** Retorna todos los auxiliares como flujo reactivo. */
+    override fun obtenerTodos(): Flow<List<Auxiliar>> =
+        auxiliarDao.obtenerTodos()
 
-    /**
-     * Obtiene un auxiliar por medio del rut
-     */
-    override suspend fun obtenerAuxiliarPorRut(rut: String): Auxiliar? = auxiliarDao.obtenerAuxiliarPorRut(rut)
+    /** Retorna el auxiliar con el [id] indicado, o null si no existe. */
+    override suspend fun obtenerAuxiliarPorId(id: Int): Auxiliar? =
+        auxiliarDao.obtenerAuxiliar(id)
 
-    /**
-     * Obtiene el nombre del auxiliar por el Id
-     */
-    override suspend fun obtenerNombrePorId(id: Int): String? = auxiliarDao.obtenerNombrePorId(id)
+    /** Retorna el auxiliar cuyo RUT coincide con [rut], o null si no existe. */
+    override suspend fun obtenerAuxiliarPorRut(rut: String): Auxiliar? =
+        auxiliarDao.obtenerAuxiliarPorRut(rut)
 
-    /**
-     * Actualiza la información de un auxiliar en la base de datos local.
-     */
-    override suspend fun actualizarStream(auxiliar: Auxiliar) = auxiliarDao.actualizar(auxiliar)
+    /** Retorna el nombre completo del auxiliar con el [id] indicado, o null si no existe. */
+    override suspend fun obtenerNombrePorId(id: Int): String? =
+        auxiliarDao.obtenerNombrePorId(id)
 
-    /**
-     * Inserta un nuevo auxiliar en la base de datos local.
-     */
-    override suspend fun insertar(auxiliar: Auxiliar) = auxiliarDao.insertar(auxiliar)
+    /** Actualiza los datos de un auxiliar existente. */
+    override suspend fun actualizar(auxiliar: Auxiliar) =
+        auxiliarDao.actualizar(auxiliar)
 
-    /**
-     * Elimina un auxiliar de la base de datos local.
-     */
-    override suspend fun eliminar(auxiliar: Auxiliar) = auxiliarDao.eliminar(auxiliar)
+    /** Inserta un nuevo auxiliar. Si ya existe con el mismo id, se ignora. */
+    override suspend fun insertar(auxiliar: Auxiliar) =
+        auxiliarDao.insertar(auxiliar)
+
+    /** Elimina un auxiliar de la base de datos. */
+    override suspend fun eliminar(auxiliar: Auxiliar) =
+        auxiliarDao.eliminar(auxiliar)
 }

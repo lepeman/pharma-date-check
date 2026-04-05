@@ -6,45 +6,49 @@ import com.lepeman.pharmadatecheck.data.repositories.EmpresaRepository
 import kotlinx.coroutines.flow.Flow
 
 /**
- * Implementación offline del repositorio para la gestión de la empresa.
- * Utiliza [EmpresaDao] como fuente de datos persistente local.
+ * Implementación offline de [EmpresaRepository].
  *
- * @property empresaDao El DAO para acceder a la tabla de empresas.
+ * Delega todas las operaciones directamente a [EmpresaDao], que accede
+ * a la tabla "empresas" de la base de datos local Room. Al ser una
+ * implementación offline, no realiza llamadas a servicios remotos ni
+ * lógica adicional más allá de la delegación al DAO.
+ *
+ * @property empresaDao DAO para acceder a la tabla "empresas".
  */
 class OfflineEmpresaRepository(private val empresaDao: EmpresaDao) : EmpresaRepository {
-    
-    /**
-     * Obtiene un flujo de datos con la lista de todas las empresas.
-     */
-    override fun obtenerTodas(): Flow<List<Empresa>> = empresaDao.obtenerTodas()
+
+    /** Retorna todas las empresas como flujo reactivo. */
+    override fun obtenerTodas(): Flow<List<Empresa>> =
+        empresaDao.obtenerTodas()
+
+    /** Retorna la razón social de la empresa con el [id] indicado. */
+    override suspend fun obtenerNombreEmpresa(id: Int): String =
+        empresaDao.obtenerNombreEmpresa(id)
 
     /**
-     * Obtiene el nombre de la empresa por medio del Id
+     * Retorna el id de la empresa cuya razón social coincide exactamente
+     * con [razonSocial], o null si no existe.
      */
-    override fun obtenerNombreEmpresa(id: Int): String = empresaDao.obtenerNombreEmpresa(id)
+    override suspend fun obtenerIdPorNombre(razonSocial: String): Int? =
+        empresaDao.obtenerIdPorNombre(razonSocial)
 
     /**
-     * Obtiene el Id de la empresa por medio del nombre
+     * Retorna como flujo reactivo las empresas cuya razón social contiene
+     * [query] como subcadena. Usado por el autocompletado del formulario
+     * de políticas de canje.
      */
-    override suspend fun obtenerIdPorNombre(razonSocial: String): Int? = empresaDao.obtenerIdPorNombre(razonSocial)
+    override fun buscarItems(query: String): Flow<List<Empresa>> =
+        empresaDao.buscarItems(query)
 
-    /**
-     * Obtiene un flujo de datos con la lista de empresas que coincidan con la consulta.
-     */
-    override fun buscarItems(query: String): Flow<List<Empresa>> = empresaDao.buscarItems(query)
+    /** Actualiza los datos de una empresa existente. */
+    override suspend fun actualizar(empresa: Empresa) =
+        empresaDao.actualizar(empresa)
 
-    /**
-     * Actualiza la información de una empresa en la base de datos local.
-     */
-    override suspend fun actualizar(empresa: Empresa) = empresaDao.actualizar(empresa)
+    /** Inserta una nueva empresa. Si ya existe con el mismo id, se ignora. */
+    override suspend fun insertar(empresa: Empresa) =
+        empresaDao.insertar(empresa)
 
-    /**
-     * Inserta una nueva empresa en la base de datos local.
-     */
-    override suspend fun insertar(empresa: Empresa)  = empresaDao.insertar(empresa)
-
-    /**
-     * Elimina una empresa de la base de datos local.
-     */
-    override suspend fun eliminar(empresa: Empresa)  = empresaDao.eliminar(empresa)
+    /** Elimina una empresa de la base de datos. */
+    override suspend fun eliminar(empresa: Empresa) =
+        empresaDao.eliminar(empresa)
 }

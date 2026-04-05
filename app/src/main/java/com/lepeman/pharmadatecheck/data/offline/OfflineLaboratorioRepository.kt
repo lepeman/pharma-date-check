@@ -9,53 +9,72 @@ import com.lepeman.pharmadatecheck.data.repositories.LaboratorioRepository
 import kotlinx.coroutines.flow.Flow
 
 /**
- * Implementación offline del repositorio para la gestión de laboratorios.
- * Utiliza [LaboratorioDao] como fuente de datos persistente local.
+ * Implementación offline de [LaboratorioRepository].
  *
- * @property laboratorioDao El DAO para acceder a la tabla de laboratorios.
+ * Delega las operaciones CRUD directamente a [LaboratorioDao]. Adicionalmente,
+ * implementa la importación masiva desde archivos CSV mediante [insertarLaboratoriosDesdeCSV],
+ * que parsea el archivo, inserta los registros válidos e informa el resultado
+ * mediante [ResultadoImportacion].
+ *
+ * @property laboratorioDao DAO para acceder a la tabla "laboratorios".
  */
 class OfflineLaboratorioRepository(private val laboratorioDao: LaboratorioDao) : LaboratorioRepository {
-    
-    /**
-     * Obtiene un flujo de datos con la lista de todos los laboratorios.
-     */
-    override fun obtenerTodos(): Flow<List<Laboratorio>> = laboratorioDao.obtenerTodos()
+
+    /** Retorna todos los laboratorios como flujo reactivo. */
+    override fun obtenerTodos(): Flow<List<Laboratorio>> =
+        laboratorioDao.obtenerTodos()
+
+    /** Retorna el nombre del laboratorio con el [id] indicado, o null si no existe. */
+    override suspend fun obtenerNombrePorId(id: Int): String? =
+        laboratorioDao.obtenerNombreLaboratorio(id)
 
     /**
-     * Obtiene un String correspondiente al nombre del laboratorio por medio del Id
+     * Retorna como flujo reactivo los laboratorios cuyo nombre contiene
+     * [query] como subcadena. Usado por el autocompletado del formulario
+     * de políticas de canje.
      */
-    override suspend fun obtenerNombrePorId(id: Int): String? = laboratorioDao.obtenerNombreLaboratorio(id)
+    override fun buscarItems(query: String): Flow<List<Laboratorio>> =
+        laboratorioDao.buscarItems(query)
 
     /**
-     * Obtiene una lista de items de la tabla "laboratorios" por medio del operador "LIKE"
+     * Retorna el id del laboratorio cuyo nombre coincide exactamente con [nombre].
+     * Usado al guardar una política de canje para obtener el identificador
+     * a partir del nombre seleccionado en el formulario.
      */
-    override fun buscarItems(query: String): Flow<List<Laboratorio>> = laboratorioDao.buscarItems(query)
+    override suspend fun obtenerIdPorNombre(nombre: String): Int =
+        laboratorioDao.obtenerIdPorNombre(nombre)
+
+    /** Actualiza los datos de un laboratorio existente. */
+    override suspend fun actualizar(laboratorio: Laboratorio) =
+        laboratorioDao.actualizar(laboratorio)
+
+    /** Inserta un nuevo laboratorio. Si ya existe con el mismo id, se ignora. */
+    override suspend fun insertar(laboratorio: Laboratorio) =
+        laboratorioDao.insertar(laboratorio)
 
     /**
-     * Obtiene el Id del laboratorio por medio del nombre
-     */
-    override suspend fun obtenerIdPorNombre(nombre: String): Int = laboratorioDao.obtenerIdPorNombre(nombre)
-
-    /**
-     * Actualiza la información de un laboratorio en la base de datos local.
-     */
-    override suspend fun actualizar(laboratorio: Laboratorio) = laboratorioDao.actualizar(laboratorio)
-
-    /**
-     * Inserta un nuevo laboratorio en la base de datos local.
-     */
-    override suspend fun insertar(laboratorio: Laboratorio) = laboratorioDao.insertar(laboratorio)
-
-    /**
-     * Inserta una lista de laboratorios en la tabla "laboratorios"
+     * Importa laboratorios desde un archivo CSV seleccionado por el usuario.
+     *
+     * Parsea el archivo línea por línea mediante [parsearCSV], descartando el
+     * encabezado, las líneas vacías y las líneas con formato inválido. Si el
+     * archivo no contiene ningún registro válido, retorna [ResultadoImportacion.Error].
+     * En caso contrario, inserta los registros válidos y retorna
+     * [ResultadoImportacion.Exito] con la cantidad de registros importados
+     * y omitidos por duplicidad.
+     *
+     * Formato esperado del CSV: CODIGO_LABORATORIO;NOMBRE_LABORATORIO
+     *
+     * @param context Contexto necesario para acceder al archivo mediante
+     * el [android.content.ContentResolver].
+     * @param uri URI del archivo CSV seleccionado por el usuario.
      */
     override suspend fun insertarLaboratoriosDesdeCSV(context: Context, uri: Uri): ResultadoImportacion {
         val laboratorios = parsearCSV(context, uri)
 
         if (laboratorios.isEmpty()) {
             return ResultadoImportacion.Error(
-                mensaje = "El archivo no contiene laboratorios válidos." +
-                " Formato esperado: CODIGO_LABORATORIO; LABORATORIO"
+                mensaje = "El archivo no contiene laboratorios válidos. " +
+                        "Formato esperado: CODIGO_LABORATORIO;LABORATORIO"
             )
         }
 
@@ -63,24 +82,30 @@ class OfflineLaboratorioRepository(private val laboratorioDao: LaboratorioDao) :
         laboratorioDao.insertarTodosLosLaboratorios(laboratorios)
         val totalDespues = laboratorioDao.contarLaboratorios()
 
-        val importados = totalDespues -totalAntes
+        val importados = totalDespues - totalAntes
         val omitidos = laboratorios.size - importados
 
         return ResultadoImportacion.Exito(importados, omitidos)
     }
 
-    /**
-     * Elimina un laboratorio de la base de datos local.
-     */
-    override suspend fun eliminar(laboratorio: Laboratorio) = laboratorioDao.eliminar(laboratorio)
+    /** Elimina un laboratorio de la base de datos. */
+    override suspend fun eliminar(laboratorio: Laboratorio) =
+        laboratorioDao.eliminar(laboratorio)
+
+    /** Retorna la cantidad total de laboratorios registrados en la tabla. */
+    override suspend fun contarLaboratorios(): Int =
+        laboratorioDao.contarLaboratorios()
 
     /**
-     * Obtiene la cantidad de items contenidos en la tabla "laboratorios"
-     */
-    override suspend fun contarLaboratorios(): Int = laboratorioDao.contarLaboratorios()
-
-    /**
-     * Función privada que nos ayuda a parsear los items para la inserción de nuevos laboratorios
+     * Parsea un archivo CSV y retorna la lista de laboratorios válidos extraídos.
+     *
+     * Descarta la primera línea (encabezado), las líneas vacías, las líneas
+     * con menos de dos campos y aquellas cuyo primer campo no sea un entero
+     * válido o cuyo nombre esté en blanco.
+     *
+     * @param context Contexto para acceder al archivo mediante ContentResolver.
+     * @param uri URI del archivo CSV a parsear.
+     * @return Lista de [Laboratorio] válidos listos para insertar.
      */
     private fun parsearCSV(context: Context, uri: Uri): List<Laboratorio> {
         val laboratorios = mutableListOf<Laboratorio>()
@@ -88,24 +113,16 @@ class OfflineLaboratorioRepository(private val laboratorioDao: LaboratorioDao) :
         context.contentResolver.openInputStream(uri)?.use { inputStream ->
             inputStream.bufferedReader().useLines { lineas ->
                 lineas.forEachIndexed { index, linea ->
-                    // Saltamos encabezado y líneas que estén vacías
                     if (index == 0 || linea.isBlank()) return@forEachIndexed
 
                     val campos = linea.split(";").map { it.trim() }
-
                     if (campos.size < 2) return@forEachIndexed
 
                     val id = campos[0].toIntOrNull() ?: return@forEachIndexed
                     val nombre = campos[1]
-
                     if (nombre.isBlank()) return@forEachIndexed
 
-                    laboratorios.add(
-                        Laboratorio(
-                            id = id,
-                            nombre = nombre
-                        )
-                    )
+                    laboratorios.add(Laboratorio(id = id, nombre = nombre))
                 }
             }
         }
