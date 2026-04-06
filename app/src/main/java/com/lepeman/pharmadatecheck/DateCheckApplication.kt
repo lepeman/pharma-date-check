@@ -5,20 +5,31 @@ import com.lepeman.pharmadatecheck.data.database.container.AppContainer
 import com.lepeman.pharmadatecheck.data.database.container.AppDataContainer
 
 /**
- * Clase principal de la aplicación que extiende de [Application].
- * Se encarga de la configuración global y de inicializar el contenedor de dependencias.
+ * Clase de aplicación principal de PharmaDateCheck.
+ *
+ * Extiende [Application] para inicializar el contenedor de dependencias
+ * [AppDataContainer] en el momento en que el proceso de la aplicación es
+ * creado por el sistema operativo, antes de que se instancie cualquier
+ * actividad, servicio o receptor.
+ *
+ * El contenedor [container] es accedido por [AppViewModelProvider] mediante
+ * la extensión [pharmaApplication] para inyectar los repositorios necesarios
+ * en cada ViewModel, sin que estos tengan conocimiento directo del mecanismo
+ * de almacenamiento subyacente.
  */
 class DateCheckApplication : Application() {
 
     /**
-     * Instancia de [AppContainer] utilizada por el resto de la aplicación para obtener repositorios.
-     * Se utiliza para implementar una forma sencilla de inyección de dependencias manual.
+     * Contenedor de dependencias de la aplicación.
+     *
+     * Inicializado en [onCreate] con una instancia de [AppDataContainer].
+     * Declarado como `lateinit` porque Android no permite pasar parámetros
+     * al constructor de [Application].
      */
     lateinit var container: AppContainer
 
     override fun onCreate() {
         super.onCreate()
-        // Inicializa el contenedor de datos pasando el contexto de la aplicación
         container = AppDataContainer(this)
     }
 }

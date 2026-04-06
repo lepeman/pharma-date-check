@@ -13,19 +13,29 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lepeman.pharmadatecheck.ui.theme.ColorVencido
 
+/**
+ * Tarjeta de error para la pantalla de historial de sesiones.
+ *
+ * Se muestra cuando [HistorialViewModel] expone el estado
+ * [HistorialViewModel.UiState.Error], presentando el mensaje de error
+ * con fondo rojo translúcido y texto en [ColorVencido] para mantener
+ * la codificación cromática del sistema.
+ *
+ * @param mensaje Descripción del error a mostrar al usuario.
+ */
 @Composable
 fun TarjetaErrorHistorial(mensaje: String) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = ColorVencido.copy(alpha = 0.15f)),
-        shape = RoundedCornerShape(12.dp)
+        colors   = CardDefaults.cardColors(containerColor = ColorVencido.copy(alpha = 0.15f)),
+        shape    = RoundedCornerShape(12.dp)
     ) {
         Text(
-            text = mensaje,
-            color = ColorVencido,
-            fontSize = 13.sp,
+            text       = mensaje,
+            color      = ColorVencido,
+            fontSize   = 13.sp,
             fontFamily = FontFamily.Monospace,
-            modifier = Modifier.padding(16.dp)
+            modifier   = Modifier.padding(16.dp)
         )
     }
 }

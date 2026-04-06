@@ -17,22 +17,32 @@ import androidx.compose.ui.unit.sp
 import com.lepeman.pharmadatecheck.ui.theme.ColorCard
 import com.lepeman.pharmadatecheck.ui.theme.ColorVencido
 
-// ── Tarjeta de error ──────────────────────────────────────────────────────────
+/**
+ * Tarjeta de error para la pantalla de escaneo.
+ *
+ * Se muestra cuando [ScanViewModel] expone el estado
+ * [ScanViewModel.ScanUiState.ProductoNoEncontrado] o
+ * [ScanViewModel.ScanUiState.Error], presentando el mensaje con borde
+ * rojo translúcido y texto en [ColorVencido] para mantener la codificación
+ * cromática del sistema.
+ *
+ * @param mensaje Descripción del error a mostrar al usuario.
+ */
 @Composable
 fun TarjetaError(mensaje: String) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = ColorCard),
-        shape = RoundedCornerShape(12.dp),
-        border = BorderStroke(1.dp, ColorVencido.copy(alpha = 0.5f))
+        colors   = CardDefaults.cardColors(containerColor = ColorCard),
+        shape    = RoundedCornerShape(12.dp),
+        border   = BorderStroke(1.dp, ColorVencido.copy(alpha = 0.5f))
     ) {
         Text(
-            text = mensaje,
-            color = ColorVencido,
-            fontSize = 13.sp,
+            text       = mensaje,
+            color      = ColorVencido,
+            fontSize   = 13.sp,
             fontFamily = FontFamily.Monospace,
-            modifier = Modifier.padding(16.dp),
-            textAlign = TextAlign.Center
+            modifier   = Modifier.padding(16.dp),
+            textAlign  = TextAlign.Center
         )
     }
 }

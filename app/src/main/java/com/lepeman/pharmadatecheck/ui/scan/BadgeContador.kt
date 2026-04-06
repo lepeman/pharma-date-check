@@ -1,10 +1,8 @@
 package com.lepeman.pharmadatecheck.ui.scan
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -22,6 +20,19 @@ import com.lepeman.pharmadatecheck.ui.theme.ColorCard
 import com.lepeman.pharmadatecheck.ui.theme.ColorVigente
 import com.lepeman.pharmadatecheck.ui.theme.PharmaDateCheckTheme
 
+/**
+ * Badge que muestra el contador de productos de una categoría de clasificación
+ * en el panel superior de la pantalla de escaneo.
+ *
+ * Presenta la [cantidad] en tipografía prominente y la [letra] identificadora
+ * de la categoría debajo, ambas en el [color] correspondiente a la clasificación.
+ * Usado en [ContadoresSesion] para mostrar los totales acumulados de productos
+ * VIGENTES (V), CANJEABLES (C) y VENCIDOS (X) durante la sesión activa.
+ *
+ * @param letra Letra identificadora de la categoría (por ejemplo, "V", "C", "X").
+ * @param cantidad Cantidad acumulada de productos en esa categoría.
+ * @param color Color asociado a la categoría de clasificación.
+ */
 @Composable
 fun BadgeContador(
     letra: String,
@@ -29,25 +40,21 @@ fun BadgeContador(
     color: Color
 ) {
     Card(
-        colors = CardDefaults.cardColors(
-            containerColor = ColorCard
-        )
+        colors = CardDefaults.cardColors(containerColor = ColorCard)
     ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text(
-                text = cantidad.toString(),
-                color = color,
+                text       = cantidad.toString(),
+                color      = color,
                 fontWeight = FontWeight.Bold,
-                fontSize = 18.sp,
+                fontSize   = 18.sp,
                 fontFamily = FontFamily.Monospace,
-                modifier = Modifier.padding(start = 8.dp, end = 8.dp, top = 4.dp)
+                modifier   = Modifier.padding(start = 8.dp, end = 8.dp, top = 4.dp)
             )
             Text(
-                text = letra,
-                color = color.copy(alpha = 0.6f),
-                fontSize = 10.sp,
+                text       = letra,
+                color      = color.copy(alpha = 0.6f),
+                fontSize   = 10.sp,
                 fontFamily = FontFamily.Monospace
             )
         }
@@ -58,7 +65,11 @@ fun BadgeContador(
 @Composable
 fun BadgeContadorPreview() {
     PharmaDateCheckTheme {
-        Box(Modifier.padding(5.dp).background(ColorVigente)) {
+        Box(
+            Modifier
+                .padding(5.dp)
+                .background(ColorVigente)
+        ) {
             BadgeContador("V", 12, ColorVigente)
         }
     }

@@ -11,6 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -20,13 +21,27 @@ import com.lepeman.pharmadatecheck.ui.theme.ColorBorde
 import com.lepeman.pharmadatecheck.ui.theme.ColorCard
 import com.lepeman.pharmadatecheck.ui.theme.ColorDim
 import com.lepeman.pharmadatecheck.ui.theme.ColorTexto
+import com.lepeman.pharmadatecheck.ui.theme.ColorVigente
 import com.lepeman.pharmadatecheck.ui.theme.PharmaDateCheckTheme
 
+/**
+ * Interruptor para habilitar o deshabilitar la política de canje por vencimiento.
+ *
+ * Muestra una etiqueta principal y un texto de estado secundario que cambia
+ * según el valor de [checked]. Cuando está activo, los campos de mes del
+ * período de canje se habilitan en [DialogFormularioCanje]; cuando está
+ * inactivo, dichos campos se deshabilitan y sus valores son ignorados
+ * tanto en la persistencia como en la clasificación.
+ *
+ * @param checked Estado actual del interruptor.
+ * @param onCheckedChange Callback invocado al cambiar el estado del interruptor.
+ * @param modifier Modificador opcional para personalizar el layout del componente.
+ */
 @Composable
 fun SwitchVencimientoFormulario(
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier
 ) {
     Row(
         modifier = modifier
@@ -35,54 +50,43 @@ fun SwitchVencimientoFormulario(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // Etiquetas de texto
         Column(modifier = Modifier.weight(1f)) {
             Text(
-                text = "Permitir canje por vencimiento",
-                color = ColorTexto,
-                fontSize = 14.sp,
+                text       = "Permitir canje por vencimiento",
+                color      = ColorTexto,
+                fontSize   = 14.sp,
                 fontFamily = FontFamily.Monospace,
                 fontWeight = FontWeight.Bold
             )
             Text(
-                text = if (checked) "Opción Activada" else "Opción Desactivada",
-                color = if (checked) ColorBorde else ColorDim,
-                fontSize = 12.sp,
+                text       = if (checked) "Opción Activada" else "Opción Desactivada",
+                color      = if (checked) ColorVigente else ColorDim,
+                fontSize   = 12.sp,
                 fontFamily = FontFamily.Monospace
             )
         }
 
-        // El interruptor (Switch)
         Switch(
-            checked = checked,
+            checked        = checked,
             onCheckedChange = onCheckedChange,
             colors = SwitchDefaults.colors(
-                checkedThumbColor = ColorBorde,                 // Color del círculo cuando está activo
-                checkedTrackColor = ColorBorde.copy(alpha = 0.4f), // Color de la pista cuando está activo
-                uncheckedThumbColor = ColorDim,               // Color del círculo cuando está inactivo
-                uncheckedTrackColor = ColorCard,               // Color de la pista cuando está inactivo
-                uncheckedBorderColor = ColorBorde.copy(alpha = 0.2f)
+                checkedThumbColor    = Color.White,
+                checkedTrackColor    = ColorVigente,
+                uncheckedThumbColor  = ColorDim,
+                uncheckedTrackColor  = ColorCard,
+                uncheckedBorderColor = ColorBorde
             )
         )
     }
 }
 
-@Preview(showBackground = true, backgroundColor = 0xFF0F1117)
+@Preview(showBackground = true, backgroundColor = 0xFFFFFFFF)
 @Composable
 fun SwitchVencimientoFormularioPreview() {
     PharmaDateCheckTheme {
         Column(modifier = Modifier.padding(16.dp)) {
-            // Ejemplo de estado Activo
-            SwitchVencimientoFormulario(
-                checked = true,
-                onCheckedChange = {}
-            )
-            
-            // Ejemplo de estado Inactivo
-            SwitchVencimientoFormulario(
-                checked = false,
-                onCheckedChange = {}
-            )
+            SwitchVencimientoFormulario(checked = true,  onCheckedChange = {})
+            SwitchVencimientoFormulario(checked = false, onCheckedChange = {})
         }
     }
 }

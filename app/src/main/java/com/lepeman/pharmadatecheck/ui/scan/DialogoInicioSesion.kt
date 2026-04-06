@@ -31,9 +31,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import androidx.room.util.copy
 import com.lepeman.pharmadatecheck.R
-import com.lepeman.pharmadatecheck.ui.theme.ColorBorde
 import com.lepeman.pharmadatecheck.ui.theme.ColorCard
 import com.lepeman.pharmadatecheck.ui.theme.ColorDim
 import com.lepeman.pharmadatecheck.ui.theme.ColorTexto
@@ -41,17 +39,22 @@ import com.lepeman.pharmadatecheck.ui.theme.ColorVencido
 import com.lepeman.pharmadatecheck.ui.theme.ColorVigente
 import com.lepeman.pharmadatecheck.ui.theme.PharmaDateCheckTheme
 
+/**
+ * Transformación visual que formatea un RUT chileno mientras el usuario escribe.
+ *
+ * Convierte la secuencia de dígitos ingresada al formato estándar XX.XXX.XXX-Y,
+ * insertando puntos cada tres dígitos desde la derecha y un guión antes del
+ * dígito verificador. El mapeo de offsets garantiza que el cursor no salte
+ * erráticamente durante la edición.
+ */
 class RutTransformation : VisualTransformation {
     override fun filter(text: AnnotatedString): TransformedText {
         val input = text.text
-        val out = StringBuilder()
+        val out   = StringBuilder()
 
-        // Lógica de formateo: 12.345.678-9
         for (i in input.indices) {
             out.append(input[i])
-            val isDv = i == input.length - 2
             val reverseIndex = input.length - 1 - i
-
             if (input.length > 1 && reverseIndex == 1) {
                 out.append("-")
             } else if (reverseIndex > 1 && (reverseIndex - 1) % 3 == 0) {
@@ -62,14 +65,11 @@ class RutTransformation : VisualTransformation {
         val rutOffsetMapping = object : OffsetMapping {
             override fun originalToTransformed(offset: Int): Int {
                 if (offset <= 0) return offset
-                val transformed = out.length - (input.length - offset)
-                return transformed.coerceIn(0, out.length)
+                return (out.length - (input.length - offset)).coerceIn(0, out.length)
             }
 
             override fun transformedToOriginal(offset: Int): Int {
-                // Relación simple para que el cursor no salte erráticamente
-                var originalOffset = offset
-                val textBefore = out.substring(0, offset.coerceAtMost(out.length))
+                val textBefore   = out.substring(0, offset.coerceAtMost(out.length))
                 val specialChars = textBefore.count { it == '.' || it == '-' }
                 return (offset - specialChars).coerceIn(0, input.length)
             }
@@ -79,6 +79,24 @@ class RutTransformation : VisualTransformation {
     }
 }
 
+/**
+ * Diálogo de autenticación al inicio de cada sesión de revisión.
+ *
+ * Es un diálogo modal que no puede cerrarse tocando fuera de él
+ * ([onDismissRequest] = {}), garantizando que toda sesión registrada en el
+ * historial tenga un auxiliar identificado. El botón de confirmación permanece
+ * deshabilitado mientras el campo de RUT está vacío.
+ *
+ * La transformación visual [RutTransformation] formatea el RUT ingresado al
+ * estándar XX.XXX.XXX-Y sin modificar el valor subyacente almacenado en el
+ * ViewModel, que mantiene únicamente los dígitos sin formato.
+ *
+ * @param operadorInput RUT ingresado por el auxiliar (solo dígitos, sin formato).
+ * @param onOperadorChange Callback invocado al cambiar el texto del campo.
+ * @param onConfirmar Callback invocado al pulsar el botón de inicio de sesión.
+ * @param errorMessage Mensaje de error a mostrar si el RUT no corresponde a
+ * ningún auxiliar registrado. Null cuando no hay error.
+ */
 @Composable
 fun DialogInicioSesion(
     operadorInput: String,
@@ -89,72 +107,80 @@ fun DialogInicioSesion(
     Dialog(onDismissRequest = {}) {
         Card(
             modifier = Modifier.padding(24.dp),
-            colors = CardDefaults.cardColors(containerColor = ColorCard),
-            shape = RoundedCornerShape(12.dp),
-            border = BorderStroke(1.5.dp, ColorVigente.copy(alpha = 0.5F))
+            colors   = CardDefaults.cardColors(containerColor = ColorCard),
+            shape    = RoundedCornerShape(12.dp),
+            border   = BorderStroke(1.5.dp, ColorVigente.copy(alpha = 0.5f))
         ) {
             Column(
                 modifier = Modifier.padding(24.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 Text(
-                    text = stringResource(R.string.inicio_sesion),
-                    color = ColorTexto,
+                    text       = stringResource(R.string.inicio_sesion),
+                    color      = ColorTexto,
                     fontWeight = FontWeight.Bold,
-                    fontSize = 16.sp,
+                    fontSize   = 16.sp,
                     fontFamily = FontFamily.Monospace
                 )
                 Text(
-                    text = stringResource(R.string.descripcion_inicio_sesion),
-                    color = ColorDim,
-                    fontSize = 12.sp,
+                    text       = stringResource(R.string.descripcion_inicio_sesion),
+                    color      = ColorDim,
+                    fontSize   = 12.sp,
                     fontFamily = FontFamily.Monospace
                 )
                 OutlinedTextField(
-                    value = operadorInput,
-                    onValueChange = onOperadorChange,
-                    placeholder = { Text("Nombre del AF", color = ColorDim,
-                        fontFamily = FontFamily.Monospace) },
+                    value                = operadorInput,
+                    onValueChange        = onOperadorChange,
+                    placeholder          = {
+                        Text(
+                            text       = "RUT del auxiliar",
+                            color      = ColorDim,
+                            fontFamily = FontFamily.Monospace
+                        )
+                    },
                     visualTransformation = RutTransformation(),
-                    singleLine = true,
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Email
+                    singleLine           = true,
+                    keyboardOptions      = KeyboardOptions(
+                        keyboardType = KeyboardType.Number
                     ),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = ColorTexto.copy(alpha = 0.4f),
+                        focusedBorderColor   = ColorVigente,
                         unfocusedBorderColor = ColorVigente,
-                        focusedTextColor = ColorTexto,
-                        unfocusedTextColor = ColorTexto,
-                        cursorColor = ColorTexto
+                        focusedTextColor     = ColorTexto,
+                        unfocusedTextColor   = ColorTexto,
+                        cursorColor          = ColorVigente
                     )
                 )
 
+                // Mensaje de error si el RUT no está registrado
                 errorMessage?.let {
                     Text(
-                        text = it,
-                        color = ColorVencido,
+                        text       = it,
+                        color      = ColorVencido,
                         fontWeight = FontWeight.Bold,
-                        fontSize = 11.sp,
+                        fontSize   = 11.sp,
                         fontFamily = FontFamily.Monospace
                     )
                 }
 
                 Button(
-                    onClick = onConfirmar,
+                    onClick  = onConfirmar,
                     modifier = Modifier.fillMaxWidth(),
-                    enabled = operadorInput.isNotBlank(),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = ColorVigente,
-                        contentColor = Color.White
+                    enabled  = operadorInput.isNotBlank(),
+                    colors   = ButtonDefaults.buttonColors(
+                        containerColor         = ColorVigente,
+                        contentColor           = Color.White,
+                        disabledContainerColor = ColorVigente.copy(alpha = 0.4f),
+                        disabledContentColor   = Color.White.copy(alpha = 0.6f)
                     ),
                     shape = RoundedCornerShape(8.dp)
                 ) {
                     Text(
-                        text = stringResource(R.string.inicio_sesion),
+                        text       = stringResource(R.string.inicio_sesion),
                         fontFamily = FontFamily.Monospace,
                         fontWeight = FontWeight.Bold,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.fillMaxWidth()
+                        textAlign  = TextAlign.Center,
+                        modifier   = Modifier.fillMaxWidth()
                     )
                 }
             }
@@ -166,15 +192,11 @@ fun DialogInicioSesion(
 @Composable
 fun DialogInicioSesionPreview() {
     PharmaDateCheckTheme {
-        // En los previews de Dialogs es recomendable envolverlos en un Box o similar
-        // si el renderizado del Dialog directo en el preview da problemas de visualización.
-        Box(
-            modifier = Modifier.padding(16.dp)
-        ) {
+        Box(modifier = Modifier.padding(16.dp)) {
             DialogInicioSesion(
-                operadorInput = "151748309",
+                operadorInput    = "151748309",
                 onOperadorChange = {},
-                onConfirmar = {}
+                onConfirmar      = {}
             )
         }
     }

@@ -38,6 +38,19 @@ import com.lepeman.pharmadatecheck.ui.theme.PharmaDateCheckTheme
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
+/**
+ * Tarjeta que muestra el resultado de la clasificación de un producto escaneado.
+ *
+ * Presenta un badge con la clasificación asignada ([Clasificacion.VIGENTE],
+ * [Clasificacion.CANJEABLE] o [Clasificacion.VENCIDO]) con su color identificador,
+ * los datos del producto clasificado mediante [FilaDato], el tiempo restante hasta
+ * el vencimiento y la fecha límite de canje cuando aplica. El borde de la tarjeta
+ * adopta el color de la clasificación para reforzar la señal visual al auxiliar.
+ *
+ * @param resultado Resultado de clasificación producido por [ClasificadorProducto].
+ * @param onNuevoEscaneo Callback invocado al pulsar el botón "Nuevo escaneo",
+ * que restablece el estado de [ScanViewModel] para procesar el siguiente producto.
+ */
 @Composable
 fun TarjetaResultado(
     resultado: ResultadoClasificacion,
@@ -53,15 +66,15 @@ fun TarjetaResultado(
 
     Card(
         modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = ColorCard),
-        shape = RoundedCornerShape(12.dp),
-        border = BorderStroke(1.5.dp, ColorVigente.copy(alpha = 0.5f))
+        colors   = CardDefaults.cardColors(containerColor = ColorCard),
+        shape    = RoundedCornerShape(12.dp),
+        border   = BorderStroke(1.5.dp, color.copy(alpha = 0.5f))
     ) {
         Column(
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            // Badge de clasificación
+            // Badge de clasificación con color dinámico
             Box(
                 modifier = Modifier
                     .clip(RoundedCornerShape(6.dp))
@@ -70,55 +83,57 @@ fun TarjetaResultado(
                     .padding(horizontal = 12.dp, vertical = 4.dp)
             ) {
                 Text(
-                    text = resultado.clasificacion.name,
-                    color = color,
+                    text       = resultado.clasificacion.name,
+                    color      = color,
                     fontWeight = FontWeight.Bold,
-                    fontSize = 14.sp,
+                    fontSize   = 14.sp,
                     fontFamily = FontFamily.Monospace
                 )
             }
 
             HorizontalDivider(color = ColorBorde)
 
-            // Datos del producto
-            FilaDato("Producto", resultado.producto.nombre)
+            // Datos del producto clasificado
+            FilaDato("Producto",    resultado.producto.nombre)
             FilaDato("Laboratorio", resultado.nombreLaboratorio)
-            FilaDato("EAN-13", resultado.producto.codigoEAN13)
+            FilaDato("EAN-13",      resultado.producto.codigoEAN13)
             FilaDato("Vencimiento", resultado.fechaVencimiento.format(formatterMesAnio))
 
+            // Fecha límite de canje — solo visible para productos CANJEABLES
             resultado.fechaLimiteCanje?.let { limite ->
                 FilaDato(
-                    etiqueta = "Límite canje",
-                    valor = limite.format(formatterMesAnio),
+                    etiqueta   = "Límite canje",
+                    valor      = limite.format(formatterMesAnio),
                     colorValor = ColorCanjeable
                 )
             }
 
+            // Tiempo restante calculado en días o meses
             val tiempoRestante = when {
-                resultado.diasRestantes <= 0    -> "Vencido"
-                resultado.diasRestantes <= 30   -> "${resultado.diasRestantes} días"
-                else                            -> "${resultado.diasRestantes / 30} meses"
+                resultado.diasRestantes <= 0  -> "Vencido"
+                resultado.diasRestantes <= 30 -> "${resultado.diasRestantes} días"
+                else                          -> "${resultado.diasRestantes / 30} meses"
             }
 
             FilaDato(
                 etiqueta = stringResource(R.string.tiempo_restante),
-                valor = tiempoRestante
+                valor    = tiempoRestante
             )
 
             HorizontalDivider(color = ColorBorde)
 
-            // Botón nuevo escaneo
+            // Botón para procesar el siguiente producto
             Button(
-                onClick = onNuevoEscaneo,
+                onClick  = onNuevoEscaneo,
                 modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(
+                colors   = ButtonDefaults.buttonColors(
                     containerColor = ColorVigente,
-                    contentColor = Color.White
+                    contentColor   = Color.White
                 ),
                 shape = RoundedCornerShape(8.dp)
             ) {
                 Text(
-                    text = stringResource(R.string.nuevo_escaneo),
+                    text       = stringResource(R.string.nuevo_escaneo),
                     fontFamily = FontFamily.Monospace,
                     fontWeight = FontWeight.Bold
                 )
@@ -127,23 +142,22 @@ fun TarjetaResultado(
     }
 }
 
-@Preview(showBackground = true, backgroundColor = 0xFF0F1117)
+@Preview(showBackground = true, backgroundColor = 0xFFFFFFFF)
 @Composable
 fun TarjetaResultadoPreview() {
     PharmaDateCheckTheme {
         Column(
-            modifier = Modifier.padding(16.dp),
+            modifier            = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // Ejemplo: Producto VIGENTE
             TarjetaResultado(
                 resultado = ResultadoClasificacion(
-                    producto = Producto("7800000000012", "Paracetamol 500mg", 1),
-                    nombreLaboratorio = "Chile",
-                    fechaVencimiento = LocalDate.now().plusMonths(24),
-                    clasificacion = Clasificacion.VIGENTE,
-                    diasRestantes = 720,
-                    fechaLimiteCanje = null // Requerido por el constructor
+                    producto          = Producto("7800000000012", "Paracetamol 500mg", 1),
+                    nombreLaboratorio = "RECALCINE",
+                    fechaVencimiento  = LocalDate.now().plusMonths(24),
+                    clasificacion     = Clasificacion.VIGENTE,
+                    diasRestantes     = 720,
+                    fechaLimiteCanje  = null
                 ),
                 onNuevoEscaneo = {}
             )

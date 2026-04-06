@@ -6,16 +6,25 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
-import com.lepeman.pharmadatecheck.data.local.entities.Laboratorio
 import com.lepeman.pharmadatecheck.ui.theme.ColorCard
 import com.lepeman.pharmadatecheck.ui.theme.ColorDim
-import com.lepeman.pharmadatecheck.ui.theme.ColorFondo
 import com.lepeman.pharmadatecheck.ui.theme.ColorTexto
 import com.lepeman.pharmadatecheck.ui.theme.ColorVencido
-import com.lepeman.pharmadatecheck.ui.theme.PharmaDateCheckTheme
 
+/**
+ * Diálogo de confirmación para eliminar una política de canje.
+ *
+ * Solicita confirmación explícita antes de ejecutar la eliminación,
+ * advirtiendo al usuario que la acción es irreversible. Al confirmar,
+ * [CanjeViewModel] elimina la política de la base de datos junto con
+ * sus datos asociados por CASCADE.
+ *
+ * @param laboratorio Identificador del laboratorio cuya política se eliminará,
+ * mostrado en el cuerpo del diálogo para identificar la política afectada.
+ * @param onConfirmar Callback invocado al pulsar el botón "Eliminar".
+ * @param onCancelar Callback invocado al pulsar "Cancelar" o al cerrar el diálogo.
+ */
 @Composable
 fun DialogConfirmarEliminar(
     laboratorio: String,
@@ -27,29 +36,37 @@ fun DialogConfirmarEliminar(
         containerColor = ColorCard,
         title = {
             Text(
-                "Eliminar política",
-                color = ColorTexto,
+                text       = "Eliminar política",
+                color      = ColorTexto,
                 fontFamily = FontFamily.Monospace,
                 fontWeight = FontWeight.Bold
             )
         },
         text = {
             Text(
-                "¿Eliminar la política de canje de $laboratorio? Esta acción no se puede deshacer.",
-                color = ColorDim,
+                text       = "¿Eliminar la política de canje de $laboratorio? Esta acción no se puede deshacer.",
+                color      = ColorDim,
                 fontFamily = FontFamily.Monospace,
-                fontSize = 13.sp
+                fontSize   = 13.sp
             )
         },
         confirmButton = {
             TextButton(onClick = onConfirmar) {
-                Text("Eliminar", color = ColorVencido,
-                    fontFamily = FontFamily.Monospace, fontWeight = FontWeight.Bold)
+                Text(
+                    text       = "Eliminar",
+                    color      = ColorVencido,
+                    fontFamily = FontFamily.Monospace,
+                    fontWeight = FontWeight.Bold
+                )
             }
         },
         dismissButton = {
             TextButton(onClick = onCancelar) {
-                Text("Cancelar", color = ColorDim, fontFamily = FontFamily.Monospace)
+                Text(
+                    text       = "Cancelar",
+                    color      = ColorDim,
+                    fontFamily = FontFamily.Monospace
+                )
             }
         }
     )

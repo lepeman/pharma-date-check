@@ -21,36 +21,52 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
-import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
+import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.lepeman.pharmadatecheck.R
 import com.lepeman.pharmadatecheck.ui.PharmaBottomAppBar
-import com.lepeman.pharmadatecheck.ui.config.ConfigDestination
 import com.lepeman.pharmadatecheck.ui.navigation.PharmaNavigation
 import com.lepeman.pharmadatecheck.ui.theme.ColorBorde
 import com.lepeman.pharmadatecheck.ui.theme.ColorDim
 import com.lepeman.pharmadatecheck.ui.theme.ColorFondo
 import com.lepeman.pharmadatecheck.ui.theme.ColorTexto
-import com.lepeman.pharmadatecheck.ui.theme.PharmaDateCheckTheme
+import com.lepeman.pharmadatecheck.ui.theme.ColorVigente
 import com.lepeman.pharmadatecheck.ui.viewmodels.AppViewModelProvider
 import com.lepeman.pharmadatecheck.ui.viewmodels.CanjeViewModel
-import com.lepeman.pharmadatecheck.ui.viewmodels.ScanViewModel
-import java.nio.file.WatchEvent
 
+/** Destino de navegación para la pantalla de gestión de políticas de canje. */
 object CanjeDestination : PharmaNavigation {
     override val route = "canje"
     override val titleRes = R.string.canje
 }
 
+/**
+ * Pantalla de gestión de políticas de canje.
+ *
+ * Muestra la lista de políticas configuradas y permite crear, editar y eliminar
+ * políticas mediante un formulario modal ([DialogFormularioCanje]) y un diálogo
+ * de confirmación de eliminación ([DialogConfirmarEliminar]).
+ *
+ * El estado de la pantalla es gestionado por [CanjeViewModel], que expone el
+ * listado de políticas, el estado del formulario y las sugerencias de autocompletado
+ * para empresas y laboratorios como [kotlinx.coroutines.flow.StateFlow].
+ *
+ * @param navController Controlador de navegación para determinar la ruta activa
+ * en la barra de navegación inferior.
+ * @param navigateToScan Acción para navegar a la pantalla de escaneo.
+ * @param navigateToHistorial Acción para navegar a la pantalla de historial.
+ * @param navigateToCanje Acción para navegar a esta misma pantalla.
+ * @param navigateToConfig Acción para navegar a la pantalla de configuración.
+ * @param viewModel ViewModel que gestiona el estado de la pantalla.
+ */
 @Composable
 fun CanjeScreen(
     navController: NavHostController,
@@ -63,61 +79,63 @@ fun CanjeScreen(
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val rutaActual = navBackStackEntry?.destination
 
-    val uiState by viewModel.uiState.collectAsState()
-    val formulario by viewModel.formulario.collectAsState()
+    val uiState          by viewModel.uiState.collectAsState()
+    val formulario       by viewModel.formulario.collectAsState()
     val politicaAEliminar by viewModel.politicaAEliminar.collectAsState()
 
-    val sugerenciasEmpresas by viewModel.sugerenciasEmpresas.collectAsState()
-    val expandedEmpresa by viewModel.expandedEmpresa.collectAsState()
+    val sugerenciasEmpresas     by viewModel.sugerenciasEmpresas.collectAsState()
+    val expandedEmpresa         by viewModel.expandedEmpresa.collectAsState()
     val sugerenciasLaboratorios by viewModel.sugerenciasLaboratorios.collectAsState()
-    val expandedLaboratorio by viewModel.expandedLaboratorio.collectAsState()
+    val expandedLaboratorio     by viewModel.expandedLaboratorio.collectAsState()
 
-    val textoMesUno by viewModel.textoMesUno.collectAsState()
-    val textoMesDos by viewModel.textoMesDos.collectAsState()
+    val textoMesUno  by viewModel.textoMesUno.collectAsState()
+    val textoMesDos  by viewModel.textoMesDos.collectAsState()
     val textoMesTres by viewModel.textoMesTres.collectAsState()
 
+    // Diálogo de creación/edición de política
     if (formulario is CanjeViewModel.FormularioState.Visible) {
         val form = formulario as CanjeViewModel.FormularioState.Visible
         DialogFormularioCanje(
-            form = form,
-            textoMesUno = textoMesUno,
-            textoMesDos = textoMesDos,
-            textoMesTres = textoMesTres,
-            sugerenciasEmpresas = sugerenciasEmpresas,
-            expandedEmpresa = expandedEmpresa,
-            onEmpresaChange = viewModel::onEmpresaChange,
-            onEmpresaSeleccionada = viewModel::onEmpresaSeleccionada,
-            onExpandedEmpresaChange = viewModel::onExpandedEmpresaChange,
-            sugerenciasLaboratorios = sugerenciasLaboratorios,
-            expandedLaboratorio = expandedLaboratorio,
-            onLaboratorioChange = viewModel::onLaboratorioChange,
+            form                     = form,
+            textoMesUno              = textoMesUno,
+            textoMesDos              = textoMesDos,
+            textoMesTres             = textoMesTres,
+            sugerenciasEmpresas      = sugerenciasEmpresas,
+            expandedEmpresa          = expandedEmpresa,
+            onEmpresaChange          = viewModel::onEmpresaChange,
+            onEmpresaSeleccionada    = viewModel::onEmpresaSeleccionada,
+            onExpandedEmpresaChange  = viewModel::onExpandedEmpresaChange,
+            sugerenciasLaboratorios  = sugerenciasLaboratorios,
+            expandedLaboratorio      = expandedLaboratorio,
+            onLaboratorioChange      = viewModel::onLaboratorioChange,
             onLaboratorioSeleccionado = viewModel::onLaboratorioSeleccionado,
             onExpandedLaboratorioChange = viewModel::onExpandedLaboratorioChange,
-            onVencimientoChange = viewModel::onVencimientoChange,
-            onMesUnoChange = viewModel::onMesUnoChange,
-            onMesDosChange = viewModel::onMesDosChange,
-            onMesTresChange = viewModel::onMesTresChange,
-            onGuardar = viewModel::guardarPolitica,
-            onCancelar = viewModel::cerrarFormulario
+            onVencimientoChange      = viewModel::onVencimientoChange,
+            onMesUnoChange           = viewModel::onMesUnoChange,
+            onMesDosChange           = viewModel::onMesDosChange,
+            onMesTresChange          = viewModel::onMesTresChange,
+            onGuardar                = viewModel::guardarPolitica,
+            onCancelar               = viewModel::cerrarFormulario
         )
     }
 
+    // Diálogo de confirmación de eliminación
     politicaAEliminar?.let { politica ->
         DialogConfirmarEliminar(
             laboratorio = politica.laboratorioId.toString(),
             onConfirmar = viewModel::confirmarEliminar,
-            onCancelar = viewModel::cancelarEliminar
+            onCancelar  = viewModel::cancelarEliminar
         )
     }
 
     Scaffold(
         bottomBar = {
             PharmaBottomAppBar(
-                canjeSelected = rutaActual?.hierarchy?.any { it.route == CanjeDestination.route } == true,
-                navigateToScan = navigateToScan,
+                canjeSelected      = rutaActual?.hierarchy?.any { it.route == CanjeDestination.route } == true,
+                navigateToScan     = navigateToScan,
                 navigateToHistorial = navigateToHistorial,
-                navigateToCanje = navigateToCanje,
-                navigateToConfig = navigateToConfig
+                navigateToCanje    = navigateToCanje,
+                navigateToConfig   = navigateToConfig
             )
         }
     ) { innerPadding ->
@@ -134,16 +152,16 @@ fun CanjeScreen(
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 Text(
-                    text = stringResource(R.string.title_politicas),
-                    color = ColorTexto,
+                    text       = stringResource(R.string.title_politicas),
+                    color      = ColorTexto,
                     fontWeight = FontWeight.Bold,
-                    fontSize = 18.sp,
+                    fontSize   = 18.sp,
                     fontFamily = FontFamily.Monospace
                 )
                 Text(
-                    text = stringResource(R.string.descripcion_canje),
-                    color = ColorDim,
-                    fontSize = 18.sp,
+                    text       = stringResource(R.string.descripcion_canje),
+                    color      = ColorDim,
+                    fontSize   = 18.sp,
                     fontFamily = FontFamily.Monospace
                 )
 
@@ -152,20 +170,18 @@ fun CanjeScreen(
                 when (val state = uiState) {
                     is CanjeViewModel.UiState.Cargando -> {
                         Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                            CircularProgressIndicator(color = ColorTexto)
+                            CircularProgressIndicator(color = ColorVigente)
                         }
                     }
                     is CanjeViewModel.UiState.Vacio -> {
-                        EstadoVacioCanje(
-                            onPrepoblar = viewModel::prepoblarSiVacio
-                        )
+                        EstadoVacioCanje(onPrepoblar = viewModel::prepoblarSiVacio)
                     }
                     is CanjeViewModel.UiState.ConDatos -> {
                         LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                             items(state.politicas, key = { it.id }) { politica ->
                                 TarjetaPoliticaCanje(
-                                    politica = politica,
-                                    onEditar = { viewModel.abrirFormularioEdicion(politica) },
+                                    politica  = politica,
+                                    onEditar  = { viewModel.abrirFormularioEdicion(politica) },
                                     onEliminar = { viewModel.solicitarEliminar(politica) }
                                 )
                             }
@@ -177,13 +193,14 @@ fun CanjeScreen(
                 }
             }
 
+            // Botón para crear una nueva política de canje
             FloatingActionButton(
-                onClick = viewModel::abrirFormularioNuevo,
-                modifier = Modifier
+                onClick        = viewModel::abrirFormularioNuevo,
+                modifier       = Modifier
                     .align(Alignment.BottomEnd)
                     .padding(24.dp),
-                containerColor = ColorBorde,
-                contentColor = ColorTexto
+                containerColor = ColorVigente,
+                contentColor   = Color.White
             ) {
                 Icon(Icons.Default.Add, contentDescription = stringResource(R.string.nueva_politica))
             }

@@ -13,9 +13,31 @@ import com.lepeman.pharmadatecheck.ui.PharmaBottomAppBar
 import com.lepeman.pharmadatecheck.ui.theme.ColorFondo
 import com.lepeman.pharmadatecheck.ui.theme.PharmaDateCheckTheme
 import com.lepeman.pharmadatecheck.ui.viewmodels.HistorialViewModel
-import java.time.LocalDate
 import java.time.LocalDateTime
 
+/**
+ * Contenido stateless de la pantalla de historial de sesiones.
+ *
+ * Decide qué vista mostrar según el estado de [detalleState]:
+ * - Si hay una sesión seleccionada ([HistorialViewModel.DetalleSesionState.Visible]),
+ *   muestra [PantallaDetalleSesion] con el detalle de productos revisados.
+ * - En cualquier otro estado, muestra [PantallaListaSesiones] con el listado
+ *   completo de sesiones registradas.
+ *
+ * @param historialSelected Indica si esta pantalla es la ruta activa en la
+ * barra de navegación inferior.
+ * @param detalleState Estado actual del detalle de sesión seleccionada.
+ * @param uiState Estado actual de la lista de sesiones.
+ * @param filtroActivo Clasificación activa para filtrar los productos en el
+ * detalle de sesión, o null si no hay filtro aplicado.
+ * @param navigateToScan Acción para navegar a la pantalla de escaneo.
+ * @param navigateToHistorial Acción para navegar a esta misma pantalla.
+ * @param navigateToCanje Acción para navegar a la pantalla de canjes.
+ * @param navigateToConfig Acción para navegar a la pantalla de configuración.
+ * @param onVolver Callback invocado al volver desde el detalle a la lista.
+ * @param onSeleccionarSesion Callback invocado al tocar una tarjeta de sesión.
+ * @param onEliminarSesion Callback invocado al solicitar eliminar una sesión.
+ */
 @Composable
 fun HistorialScreenContent(
     historialSelected: Boolean,
@@ -33,11 +55,11 @@ fun HistorialScreenContent(
     Scaffold(
         bottomBar = {
             PharmaBottomAppBar(
-                historialSelected = historialSelected,
-                navigateToScan = navigateToScan,
+                historialSelected   = historialSelected,
+                navigateToScan      = navigateToScan,
                 navigateToHistorial = navigateToHistorial,
-                navigateToCanje = navigateToCanje,
-                navigateToConfig = navigateToConfig
+                navigateToCanje     = navigateToCanje,
+                navigateToConfig    = navigateToConfig
             )
         }
     ) { innerPadding ->
@@ -47,21 +69,22 @@ fun HistorialScreenContent(
                 .background(ColorFondo)
                 .padding(innerPadding)
         ) {
-            // Si hay una sesión seleccionada mostramos el detalle
             if (detalleState is HistorialViewModel.DetalleSesionState.Visible) {
+                // Vista de detalle de la sesión seleccionada
                 PantallaDetalleSesion(
-                    sesion = detalleState.sesion,
-                    productos = detalleState.productos,
+                    sesion       = detalleState.sesion,
+                    productos    = detalleState.productos,
                     filtroActivo = filtroActivo,
-                    onFiltroChange = { /** Por resolver*/ },
-                    onVolver = onVolver
+                    // TODO: conectar con HistorialViewModel.setFiltroClasificacion
+                    onFiltroChange = {},
+                    onVolver     = onVolver
                 )
             } else {
-                // Lista de sesiones
+                // Vista de lista de sesiones registradas
                 PantallaListaSesiones(
-                    uiState = uiState,
+                    uiState             = uiState,
                     onSeleccionarSesion = onSeleccionarSesion,
-                    onEliminarSesion = onEliminarSesion
+                    onEliminarSesion    = onEliminarSesion
                 )
             }
         }
@@ -71,34 +94,31 @@ fun HistorialScreenContent(
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun HistorialScreenContentPreview() {
-
     val sesion = SesionRevision(
-        id = 9,
-        auxiliarId = 1,
-        fechaInicio = LocalDateTime.now(),
-        fechaTermino = null,
-        totalVigentes = 10,
+        id              = 9,
+        auxiliarId      = 1,
+        fechaInicio     = LocalDateTime.now(),
+        fechaTermino    = null,
+        totalVigentes   = 10,
         totalCanjeables = 5,
-        totalVencidos = 2
+        totalVencidos   = 2
     )
-
-    val listaSesionConNombre = listOf(HistorialViewModel.SesionConNombre(sesion, "Luis Ortega"))
-
+    val listaSesionConNombre = listOf(
+        HistorialViewModel.SesionConNombre(sesion, "Luis Ortega")
+    )
     PharmaDateCheckTheme {
         HistorialScreenContent(
-            historialSelected = true,
-            detalleState = HistorialViewModel.DetalleSesionState.Cargando,
-            uiState = HistorialViewModel.UiState.ConDatos(
-                sesiones = listaSesionConNombre
-            ),
-            filtroActivo = null,
-            navigateToScan = {},
+            historialSelected   = true,
+            detalleState        = HistorialViewModel.DetalleSesionState.Cargando,
+            uiState             = HistorialViewModel.UiState.ConDatos(listaSesionConNombre),
+            filtroActivo        = null,
+            navigateToScan      = {},
             navigateToHistorial = {},
-            navigateToCanje = {},
-            navigateToConfig = {},
-            onVolver = {},
+            navigateToCanje     = {},
+            navigateToConfig    = {},
+            onVolver            = {},
             onSeleccionarSesion = {},
-            onEliminarSesion = {}
+            onEliminarSesion    = {}
         )
     }
 }

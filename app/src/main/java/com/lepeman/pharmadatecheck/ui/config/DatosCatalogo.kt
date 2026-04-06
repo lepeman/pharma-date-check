@@ -12,31 +12,39 @@ import com.lepeman.pharmadatecheck.ui.theme.ColorDim
 import com.lepeman.pharmadatecheck.ui.theme.ColorTexto
 import com.lepeman.pharmadatecheck.ui.theme.PharmaDateCheckTheme
 
+/**
+ * Componente que muestra una métrica de catálogo con su cantidad y etiqueta.
+ *
+ * Presenta la [cantidad] en tipografía grande y prominente y la [etiqueta]
+ * descriptiva debajo en tamaño reducido. Usado en [ConfigScreenContent] para
+ * mostrar el total de productos y laboratorios registrados en la base de datos.
+ *
+ * @param cantidad Valor numérico a mostrar.
+ * @param etiqueta Descripción del dato mostrado (por ejemplo, "productos").
+ */
 @Composable
 fun DatosCatalogo(cantidad: Int, etiqueta: String) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Text(
-            text = cantidad.toString(),
-            color = ColorTexto,
+            text       = cantidad.toString(),
+            color      = ColorTexto,
             fontWeight = FontWeight.Bold,
-            fontSize = 32.sp,
+            fontSize   = 32.sp,
             fontFamily = FontFamily.Monospace
         )
         Text(
-            text = etiqueta,
-            color = ColorDim,
-            fontSize = 12.sp,
+            text       = etiqueta,
+            color      = ColorDim,
+            fontSize   = 12.sp,
             fontFamily = FontFamily.Monospace
         )
     }
 }
 
-@Preview(showBackground = true, backgroundColor = 0xFF0F1117)
+@Preview(showBackground = true, backgroundColor = 0xFFFFFFFF)
 @Composable
 fun DatosCatalogoPreview() {
     PharmaDateCheckTheme {
-        DatosCatalogo(20, "Productos")
+        DatosCatalogo(cantidad = 20, etiqueta = "Productos")
     }
 }

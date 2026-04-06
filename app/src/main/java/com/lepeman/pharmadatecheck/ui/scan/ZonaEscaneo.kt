@@ -38,11 +38,26 @@ import androidx.core.view.WindowInsetsCompat
 import com.lepeman.pharmadatecheck.ui.theme.ColorBorde
 import com.lepeman.pharmadatecheck.ui.theme.ColorCard
 import com.lepeman.pharmadatecheck.ui.theme.ColorDim
-import com.lepeman.pharmadatecheck.ui.theme.ColorFondo
 import com.lepeman.pharmadatecheck.ui.theme.ColorTexto
 import com.lepeman.pharmadatecheck.ui.theme.ColorVigente
 
-// ── Zona de escaneo ───────────────────────────────────────────────────────────
+/**
+ * Zona de captura de código EAN-13 en la pantalla de escaneo.
+ *
+ * Combina un [OutlinedTextField] con un botón OK para soportar tanto la
+ * captura mediante lector HID como el ingreso manual del código. Al
+ * inicializarse solicita el foco automáticamente y oculta el teclado
+ * virtual, de modo que el lector HID pueda enviar caracteres directamente
+ * sin que el teclado de pantalla interfiera con la interfaz.
+ *
+ * El campo acepta únicamente entrada numérica ([KeyboardType.NumberPassword])
+ * y confirma la entrada al pulsar la tecla Done del teclado o el botón OK.
+ *
+ * @param inputManual Texto actualmente ingresado en el campo.
+ * @param onInputChange Callback invocado al cambiar el texto del campo.
+ * @param onConfirmarManual Callback invocado al confirmar el código ingresado,
+ * ya sea mediante el botón OK o la tecla Done del teclado.
+ */
 @Composable
 fun ZonaEscaneo(
     inputManual: String,
@@ -50,12 +65,12 @@ fun ZonaEscaneo(
     onConfirmarManual: () -> Unit
 ) {
     val focusRequester = remember { FocusRequester() }
-    val view = LocalView.current
+    val view           = LocalView.current
 
+    // Solicita el foco y oculta el teclado virtual al inicializarse
     LaunchedEffect(Unit) {
         try {
             focusRequester.requestFocus()
-            // Ocultar teclado virtual después de obtener el foco
             WindowCompat.getInsetsController(
                 (view.context as Activity).window,
                 view
@@ -68,60 +83,64 @@ fun ZonaEscaneo(
             .fillMaxWidth()
             .padding(horizontal = 12.dp),
         colors = CardDefaults.cardColors(containerColor = ColorCard),
-        shape = RoundedCornerShape(12.dp),
-        border = BorderStroke(1.5.dp, ColorVigente.copy(alpha = 0.5F))
+        shape  = RoundedCornerShape(12.dp),
+        border = BorderStroke(1.5.dp, ColorVigente.copy(alpha = 0.5f))
     ) {
         Column(
-            modifier = Modifier.padding(16.dp),
+            modifier            = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             Text(
-                text = "Escanee el código de barras o ingrese el EAN-13",
-                color = ColorDim,
-                fontSize = 12.sp,
+                text       = "Escanee el código de barras o ingrese el EAN-13",
+                color      = ColorDim,
+                fontSize   = 12.sp,
                 fontFamily = FontFamily.Monospace
             )
             Row(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment     = Alignment.CenterVertically
             ) {
                 OutlinedTextField(
-                    value = inputManual,
+                    value         = inputManual,
                     onValueChange = onInputChange,
-                    modifier = Modifier
+                    modifier      = Modifier
                         .weight(1f)
                         .focusRequester(focusRequester),
                     placeholder = {
                         Text(
-                            "_ _ _ _ _ _ _ _ _ _ _ _ _",
-                            color = ColorDim,
+                            text       = "_ _ _ _ _ _ _ _ _ _ _ _ _",
+                            color      = ColorDim,
                             fontFamily = FontFamily.Monospace,
-                            fontSize = 13.sp
+                            fontSize   = 13.sp
                         )
                     },
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.NumberPassword,
-                        imeAction = ImeAction.Done
+                        imeAction    = ImeAction.Done
                     ),
                     keyboardActions = KeyboardActions(onDone = { onConfirmarManual() }),
-                    singleLine = true,
+                    singleLine      = true,
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = ColorTexto.copy(alpha = 0.4f),
+                        focusedBorderColor   = ColorVigente,
                         unfocusedBorderColor = ColorBorde,
-                        focusedTextColor = ColorTexto,
-                        unfocusedTextColor = ColorTexto,
-                        cursorColor = ColorTexto
+                        focusedTextColor     = ColorTexto,
+                        unfocusedTextColor   = ColorTexto,
+                        cursorColor          = ColorVigente
                     )
                 )
                 Button(
                     onClick = onConfirmarManual,
-                    colors = ButtonDefaults.buttonColors(
+                    colors  = ButtonDefaults.buttonColors(
                         containerColor = ColorVigente,
-                        contentColor = Color.White
+                        contentColor   = Color.White
                     ),
                     shape = RoundedCornerShape(8.dp)
                 ) {
-                    Text("OK", fontFamily = FontFamily.Monospace, fontWeight = FontWeight.Bold)
+                    Text(
+                        text       = "OK",
+                        fontFamily = FontFamily.Monospace,
+                        fontWeight = FontWeight.Bold
+                    )
                 }
             }
         }
@@ -132,8 +151,8 @@ fun ZonaEscaneo(
 @Composable
 fun ZonaEscaneoPreview() {
     ZonaEscaneo(
-        inputManual = "4525485689874",
-        onInputChange = {},
+        inputManual       = "4525485689874",
+        onInputChange     = {},
         onConfirmarManual = {}
     )
 }

@@ -19,14 +19,32 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.room.util.TableInfo
 import com.lepeman.pharmadatecheck.R
 import com.lepeman.pharmadatecheck.data.local.entities.SesionRevision
 import com.lepeman.pharmadatecheck.ui.theme.ColorBorde
 import com.lepeman.pharmadatecheck.ui.theme.ColorDim
 import com.lepeman.pharmadatecheck.ui.theme.ColorTexto
+import com.lepeman.pharmadatecheck.ui.theme.ColorVigente
 import com.lepeman.pharmadatecheck.ui.viewmodels.HistorialViewModel
 
+/**
+ * Pantalla de lista de sesiones de revisión registradas.
+ *
+ * Adapta su contenido según el estado actual de [uiState]:
+ * - [HistorialViewModel.UiState.Cargando]: muestra un indicador de progreso.
+ * - [HistorialViewModel.UiState.Vacio]: muestra un mensaje informativo cuando
+ *   no hay sesiones registradas.
+ * - [HistorialViewModel.UiState.ConDatos]: muestra la lista de sesiones mediante
+ *   [TarjetaSesion], con el nombre del auxiliar resuelto por el ViewModel.
+ * - [HistorialViewModel.UiState.Error]: muestra [TarjetaErrorHistorial] con el
+ *   mensaje de error correspondiente.
+ *
+ * @param uiState Estado actual de la lista de sesiones.
+ * @param onSeleccionarSesion Callback invocado al tocar una tarjeta de sesión
+ * para navegar al detalle.
+ * @param onEliminarSesion Callback invocado al pulsar el ícono de eliminación
+ * de una tarjeta de sesión.
+ */
 @Composable
 fun PantallaListaSesiones(
     uiState: HistorialViewModel.UiState,
@@ -40,16 +58,16 @@ fun PantallaListaSesiones(
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         Text(
-            text = stringResource(R.string.historial_revisiones),
-            color = ColorTexto,
+            text       = stringResource(R.string.historial_revisiones),
+            color      = ColorTexto,
             fontWeight = FontWeight.Bold,
-            fontSize = 18.sp,
+            fontSize   = 18.sp,
             fontFamily = FontFamily.Monospace
         )
         Text(
-            text = "Toque una sesión para ver el detalle",
-            color = ColorDim,
-            fontSize = 12.sp,
+            text       = "Toque una sesión para ver el detalle",
+            color      = ColorDim,
+            fontSize   = 12.sp,
             fontFamily = FontFamily.Monospace
         )
 
@@ -58,17 +76,17 @@ fun PantallaListaSesiones(
         when (uiState) {
             is HistorialViewModel.UiState.Cargando -> {
                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator(color = ColorTexto)
+                    CircularProgressIndicator(color = ColorVigente)
                 }
             }
             is HistorialViewModel.UiState.Vacio -> {
                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     Text(
-                        text = "No hay sesiones registradas.\nComplete una revisión para verla aquí.",
-                        color = ColorDim,
-                        fontSize = 13.sp,
+                        text       = "No hay sesiones registradas.\nComplete una revisión para verla aquí.",
+                        color      = ColorDim,
+                        fontSize   = 13.sp,
                         fontFamily = FontFamily.Monospace,
-                        textAlign = TextAlign.Center
+                        textAlign  = TextAlign.Center
                     )
                 }
             }
@@ -76,10 +94,10 @@ fun PantallaListaSesiones(
                 LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     items(items = uiState.sesiones, key = { it.sesion.id }) { item ->
                         TarjetaSesion(
-                            sesion = item.sesion,
+                            sesion         = item.sesion,
                             nombreAuxiliar = item.nombreAuxiliar,
-                            onClick = { onSeleccionarSesion(item.sesion) },
-                            onEliminar = { onEliminarSesion(item.sesion) }
+                            onClick        = { onSeleccionarSesion(item.sesion) },
+                            onEliminar     = { onEliminarSesion(item.sesion) }
                         )
                     }
                 }
