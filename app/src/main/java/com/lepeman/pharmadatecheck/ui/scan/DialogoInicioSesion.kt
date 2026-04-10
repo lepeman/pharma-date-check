@@ -16,6 +16,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
@@ -113,17 +114,19 @@ fun DialogInicioSesion(
         ) {
             Column(
                 modifier = Modifier.padding(24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 Text(
                     text       = stringResource(R.string.inicio_sesion),
-                    color      = ColorTexto,
+                    textAlign  = TextAlign.Center,
                     fontWeight = FontWeight.Bold,
                     fontSize   = 16.sp,
                     fontFamily = FontFamily.Monospace
                 )
                 Text(
                     text       = stringResource(R.string.descripcion_inicio_sesion),
+                    textAlign  = TextAlign.Center,
                     color      = ColorDim,
                     fontSize   = 12.sp,
                     fontFamily = FontFamily.Monospace

@@ -38,13 +38,19 @@ class CanjeViewModel(
 
     // ── Estados ───────────────────────────────────────────────────────────────
 
+    data class PoliticaConNombre(
+        val politica: PoliticaCanje,
+        val empresa: String,
+        val laboratorio: String
+    )
+
     /**
      * Estado de la lista de políticas de canje.
      */
     sealed class UiState {
         object Cargando : UiState()
         object Vacio : UiState()
-        data class ConDatos(val politicas: List<PoliticaCanje>) : UiState()
+        data class ConDatos(val politicas: List<PoliticaConNombre>) : UiState()
         data class Error(val mensaje: String) : UiState()
     }
 
@@ -143,8 +149,15 @@ class CanjeViewModel(
     private fun cargarPoliticas() {
         viewModelScope.launch {
             politicaCanjeRepository.obtenerTodas().collect { politicas ->
-                _uiState.value = if (politicas.isEmpty()) UiState.Vacio
-                else UiState.ConDatos(politicas)
+                val conNombres = politicas.map { politica ->
+                    PoliticaConNombre(
+                        politica = politica,
+                        empresa = laboratorioRepository.obtenerNombrePorId(politica.empresaId) ?: "Empresa: ${politica.empresaId}",
+                        laboratorio = laboratorioRepository.obtenerNombrePorId(politica.laboratorioId) ?: "Laboratorio: ${politica.laboratorioId}"
+                    )
+                }
+                _uiState.value = if (conNombres.isEmpty()) UiState.Vacio
+                else UiState.ConDatos(conNombres)
             }
         }
     }

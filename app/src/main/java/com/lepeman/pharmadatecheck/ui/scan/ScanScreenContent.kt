@@ -22,6 +22,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.lepeman.pharmadatecheck.R
+import com.lepeman.pharmadatecheck.data.local.entities.Producto
+import com.lepeman.pharmadatecheck.domain.Clasificacion
+import com.lepeman.pharmadatecheck.domain.ResultadoClasificacion
 import com.lepeman.pharmadatecheck.ui.PharmaBottomAppBar
 import com.lepeman.pharmadatecheck.ui.theme.ColorFondo
 import com.lepeman.pharmadatecheck.ui.theme.ColorTexto
@@ -29,6 +32,8 @@ import com.lepeman.pharmadatecheck.ui.theme.ColorVigente
 import com.lepeman.pharmadatecheck.ui.theme.PharmaDateCheckTheme
 import com.lepeman.pharmadatecheck.ui.viewmodels.ScanViewModel
 import com.lepeman.pharmadatecheck.ui.viewmodels.ScanViewModel.ScanUiState
+import java.time.LocalDate
+import java.time.LocalDateTime
 
 /**
  * Contenido stateless de la pantalla de escaneo.
@@ -188,11 +193,61 @@ fun ScanScreenContent(
 @Preview(showBackground = true)
 @Composable
 fun ScanScreenContentPreview() {
+
+    val activa = ScanViewModel.SesionUiState.Activa("Luis Ortega")
+
     PharmaDateCheckTheme {
         ScanScreenContent(
             auxiliarSesion        = "Luis Andrés Ortega Lepe",
             scanSelected          = true,
             scanUiState           = ScanUiState.Idle,
+            sesionUiState         = activa,
+            sesionActivaId        = 1,
+            ean13Pendiente        = null,
+            totalVigentes         = 12,
+            totalCanjeables       = 3,
+            totalVencidos         = 1,
+            onIniciarSesion       = {},
+            onCerrarSesion        = {},
+            onProcesarEAN13Manual = {},
+            onConfirmarFecha      = { _, _ -> },
+            onResetearEstado      = {},
+            navigateToScan        = {},
+            navigateToHistorial   = {},
+            navigateToCanje       = {},
+            navigateToConfig      = {}
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ScanScreenContentResultadoPreview() {
+
+    val clasificacion = Clasificacion.VIGENTE
+
+    val producto = Producto(
+        codigoEAN13 = "8904103326574",
+        nombre = "OTOC 8 MG BUC. DISPER. COM. 10",
+        laboratorioId = 1190
+    )
+
+    val uiState = ScanUiState.Resultado(
+        resultado = ResultadoClasificacion(
+            producto = producto,
+            nombreLaboratorio = "SEVEN PHARMA",
+            fechaVencimiento = LocalDate.of(2026, 5, 1),
+            clasificacion = clasificacion,
+            diasRestantes = 10,
+            fechaLimiteCanje = null
+        )
+    )
+
+    PharmaDateCheckTheme {
+        ScanScreenContent(
+            auxiliarSesion        = "Luis Andrés Ortega Lepe",
+            scanSelected          = true,
+            scanUiState           = uiState,
             sesionUiState         = ScanViewModel.SesionUiState.Activa("Luis Ortega"),
             sesionActivaId        = 1,
             ean13Pendiente        = null,

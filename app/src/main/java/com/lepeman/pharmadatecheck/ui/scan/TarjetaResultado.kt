@@ -65,7 +65,9 @@ fun TarjetaResultado(
     val formatterMesAnio = DateTimeFormatter.ofPattern("MM/yyyy")
 
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 12.dp),
         colors   = CardDefaults.cardColors(containerColor = ColorCard),
         shape    = RoundedCornerShape(12.dp),
         border   = BorderStroke(1.5.dp, color.copy(alpha = 0.5f))

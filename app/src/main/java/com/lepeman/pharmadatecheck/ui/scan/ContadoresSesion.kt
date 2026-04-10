@@ -52,7 +52,7 @@ fun ContadoresSesion(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(4.dp),
+            .padding(start = 12.dp, top = 4.dp, end = 12.dp),
         colors = CardDefaults.cardColors(
             containerColor = ColorVigente,
             contentColor   = Color.White

@@ -131,7 +131,8 @@ abstract class AppDatabase : RoomDatabase() {
                     Laboratorio(id = 2, nombre = "CHILEMARCAS"),
                     Laboratorio(id = 3, nombre = "BAYER POPULAR"),
                     Laboratorio(id = 4, nombre = "RECALCINE"),
-                    Laboratorio(id = 5, nombre = "ASSISTANCE")
+                    Laboratorio(id = 5, nombre = "ASSISTANCE"),
+                    Laboratorio(id = 1190, nombre = "SEVEN PHARMA")
                 ))
 
                 // ── Empresas (razones sociales) ───────────────────────────────
@@ -147,7 +148,8 @@ abstract class AppDatabase : RoomDatabase() {
                     Empresa(id = 9,  razonSocial = "NOVOFARMA SERVICE S.A."),
                     Empresa(id = 10, razonSocial = "MERCK S.A."),
                     Empresa(id = 11, razonSocial = "CHEMOPHARMA S.A."),
-                    Empresa(id = 12, razonSocial = "INSTITUTO SANITAS S.A.")
+                    Empresa(id = 12, razonSocial = "INSTITUTO SANITAS S.A."),
+                    Empresa(id = 13, razonSocial = "SEVEN PHARMA S.P.A.")
                 ))
 
                 // ── Auxiliares de farmacia ────────────────────────────────────

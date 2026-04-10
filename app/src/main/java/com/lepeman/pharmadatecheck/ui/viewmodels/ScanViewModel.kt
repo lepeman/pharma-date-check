@@ -12,6 +12,7 @@ import com.lepeman.pharmadatecheck.data.repositories.SesionRevisionRepository
 import com.lepeman.pharmadatecheck.domain.Clasificacion
 import com.lepeman.pharmadatecheck.domain.ClasificadorProducto
 import com.lepeman.pharmadatecheck.domain.ResultadoClasificacion
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -120,9 +121,17 @@ class ScanViewModel(
     fun iniciarSesion(rut: String) {
         viewModelScope.launch {
             _sesionUiState.value = SesionUiState.Cargando
-            val auxiliar = auxiliarRepository.obtenerAuxiliarPorRut(rut)
+
+            var intentos = 0
+            var auxiliar = auxiliarRepository.obtenerAuxiliarPorRut(rut)
+            while (auxiliar == null && intentos < 5) {
+                delay(300)
+                auxiliar = auxiliarRepository.obtenerAuxiliarPorRut(rut)
+                intentos++
+            }
 
             if (auxiliar == null) {
+                delay(300)
                 _sesionUiState.value = SesionUiState.Error("RUT no encontrado. Verifique su código.")
                 return@launch
             }
@@ -202,7 +211,6 @@ class ScanViewModel(
                 return@launch
             }
 
-            // Producto encontrado: solicitar fecha de vencimiento al operador
             _ean13Pendiente.value = ean13
             _scanUiState.value    = ScanUiState.Idle
         }

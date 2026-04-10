@@ -1,44 +1,14 @@
 package com.lepeman.pharmadatecheck.ui.canje
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavHostController
 import androidx.navigation.NavDestination.Companion.hierarchy
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.lepeman.pharmadatecheck.R
-import com.lepeman.pharmadatecheck.ui.PharmaBottomAppBar
 import com.lepeman.pharmadatecheck.ui.navigation.PharmaNavigation
-import com.lepeman.pharmadatecheck.ui.theme.ColorBorde
-import com.lepeman.pharmadatecheck.ui.theme.ColorDim
-import com.lepeman.pharmadatecheck.ui.theme.ColorFondo
-import com.lepeman.pharmadatecheck.ui.theme.ColorTexto
-import com.lepeman.pharmadatecheck.ui.theme.ColorVigente
 import com.lepeman.pharmadatecheck.ui.viewmodels.AppViewModelProvider
 import com.lepeman.pharmadatecheck.ui.viewmodels.CanjeViewModel
 
@@ -51,13 +21,9 @@ object CanjeDestination : PharmaNavigation {
 /**
  * Pantalla de gestión de políticas de canje.
  *
- * Muestra la lista de políticas configuradas y permite crear, editar y eliminar
- * políticas mediante un formulario modal ([DialogFormularioCanje]) y un diálogo
- * de confirmación de eliminación ([DialogConfirmarEliminar]).
- *
- * El estado de la pantalla es gestionado por [CanjeViewModel], que expone el
- * listado de políticas, el estado del formulario y las sugerencias de autocompletado
- * para empresas y laboratorios como [kotlinx.coroutines.flow.StateFlow].
+ * Actúa como contenedor de estado (stateful), recopilando los valores
+ * expuestos por [CanjeViewModel] y delegando el renderizado a
+ * [CanjeScreenContent], que es un composable sin estado (stateless).
  *
  * @param navController Controlador de navegación para determinar la ruta activa
  * en la barra de navegación inferior.
@@ -77,10 +43,11 @@ fun CanjeScreen(
     viewModel: CanjeViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val rutaActual = navBackStackEntry?.destination
+    val rutaActual        = navBackStackEntry?.destination
+    val canjeSelected     = rutaActual?.hierarchy?.any { it.route == CanjeDestination.route } == true
 
-    val uiState          by viewModel.uiState.collectAsState()
-    val formulario       by viewModel.formulario.collectAsState()
+    val uiState           by viewModel.uiState.collectAsState()
+    val formulario        by viewModel.formulario.collectAsState()
     val politicaAEliminar by viewModel.politicaAEliminar.collectAsState()
 
     val sugerenciasEmpresas     by viewModel.sugerenciasEmpresas.collectAsState()
@@ -92,118 +59,39 @@ fun CanjeScreen(
     val textoMesDos  by viewModel.textoMesDos.collectAsState()
     val textoMesTres by viewModel.textoMesTres.collectAsState()
 
-    // Diálogo de creación/edición de política
-    if (formulario is CanjeViewModel.FormularioState.Visible) {
-        val form = formulario as CanjeViewModel.FormularioState.Visible
-        DialogFormularioCanje(
-            form                     = form,
-            textoMesUno              = textoMesUno,
-            textoMesDos              = textoMesDos,
-            textoMesTres             = textoMesTres,
-            sugerenciasEmpresas      = sugerenciasEmpresas,
-            expandedEmpresa          = expandedEmpresa,
-            onEmpresaChange          = viewModel::onEmpresaChange,
-            onEmpresaSeleccionada    = viewModel::onEmpresaSeleccionada,
-            onExpandedEmpresaChange  = viewModel::onExpandedEmpresaChange,
-            sugerenciasLaboratorios  = sugerenciasLaboratorios,
-            expandedLaboratorio      = expandedLaboratorio,
-            onLaboratorioChange      = viewModel::onLaboratorioChange,
-            onLaboratorioSeleccionado = viewModel::onLaboratorioSeleccionado,
-            onExpandedLaboratorioChange = viewModel::onExpandedLaboratorioChange,
-            onVencimientoChange      = viewModel::onVencimientoChange,
-            onMesUnoChange           = viewModel::onMesUnoChange,
-            onMesDosChange           = viewModel::onMesDosChange,
-            onMesTresChange          = viewModel::onMesTresChange,
-            onGuardar                = viewModel::guardarPolitica,
-            onCancelar               = viewModel::cerrarFormulario
-        )
-    }
-
-    // Diálogo de confirmación de eliminación
-    politicaAEliminar?.let { politica ->
-        DialogConfirmarEliminar(
-            laboratorio = politica.laboratorioId.toString(),
-            onConfirmar = viewModel::confirmarEliminar,
-            onCancelar  = viewModel::cancelarEliminar
-        )
-    }
-
-    Scaffold(
-        bottomBar = {
-            PharmaBottomAppBar(
-                canjeSelected      = rutaActual?.hierarchy?.any { it.route == CanjeDestination.route } == true,
-                navigateToScan     = navigateToScan,
-                navigateToHistorial = navigateToHistorial,
-                navigateToCanje    = navigateToCanje,
-                navigateToConfig   = navigateToConfig
-            )
-        }
-    ) { innerPadding ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(ColorFondo)
-                .padding(innerPadding)
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                Text(
-                    text       = stringResource(R.string.title_politicas),
-                    color      = ColorTexto,
-                    fontWeight = FontWeight.Bold,
-                    fontSize   = 18.sp,
-                    fontFamily = FontFamily.Monospace
-                )
-                Text(
-                    text       = stringResource(R.string.descripcion_canje),
-                    color      = ColorDim,
-                    fontSize   = 18.sp,
-                    fontFamily = FontFamily.Monospace
-                )
-
-                HorizontalDivider(color = ColorBorde)
-
-                when (val state = uiState) {
-                    is CanjeViewModel.UiState.Cargando -> {
-                        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                            CircularProgressIndicator(color = ColorVigente)
-                        }
-                    }
-                    is CanjeViewModel.UiState.Vacio -> {
-                        EstadoVacioCanje(onPrepoblar = viewModel::prepoblarSiVacio)
-                    }
-                    is CanjeViewModel.UiState.ConDatos -> {
-                        LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                            items(state.politicas, key = { it.id }) { politica ->
-                                TarjetaPoliticaCanje(
-                                    politica  = politica,
-                                    onEditar  = { viewModel.abrirFormularioEdicion(politica) },
-                                    onEliminar = { viewModel.solicitarEliminar(politica) }
-                                )
-                            }
-                        }
-                    }
-                    is CanjeViewModel.UiState.Error -> {
-                        TarjetaErrorCanje(state.mensaje)
-                    }
-                }
-            }
-
-            // Botón para crear una nueva política de canje
-            FloatingActionButton(
-                onClick        = viewModel::abrirFormularioNuevo,
-                modifier       = Modifier
-                    .align(Alignment.BottomEnd)
-                    .padding(24.dp),
-                containerColor = ColorVigente,
-                contentColor   = Color.White
-            ) {
-                Icon(Icons.Default.Add, contentDescription = stringResource(R.string.nueva_politica))
-            }
-        }
-    }
+    CanjeScreenContent(
+        canjeSelected               = canjeSelected,
+        uiState                     = uiState,
+        formulario                  = formulario,
+        politicaAEliminar           = politicaAEliminar,
+        sugerenciasEmpresas         = sugerenciasEmpresas,
+        expandedEmpresa             = expandedEmpresa,
+        sugerenciasLaboratorios     = sugerenciasLaboratorios,
+        expandedLaboratorio         = expandedLaboratorio,
+        textoMesUno                 = textoMesUno,
+        textoMesDos                 = textoMesDos,
+        textoMesTres                = textoMesTres,
+        onNuevaPolitica             = viewModel::abrirFormularioNuevo,
+        onEditarPolitica            = viewModel::abrirFormularioEdicion,
+        onEliminarPolitica          = viewModel::solicitarEliminar,
+        onConfirmarEliminar         = viewModel::confirmarEliminar,
+        onCancelarEliminar          = viewModel::cancelarEliminar,
+        onPrepoblar                 = viewModel::prepoblarSiVacio,
+        onEmpresaChange             = viewModel::onEmpresaChange,
+        onEmpresaSeleccionada       = viewModel::onEmpresaSeleccionada,
+        onExpandedEmpresaChange     = viewModel::onExpandedEmpresaChange,
+        onLaboratorioChange         = viewModel::onLaboratorioChange,
+        onLaboratorioSeleccionado   = viewModel::onLaboratorioSeleccionado,
+        onExpandedLaboratorioChange = viewModel::onExpandedLaboratorioChange,
+        onVencimientoChange         = viewModel::onVencimientoChange,
+        onMesUnoChange              = viewModel::onMesUnoChange,
+        onMesDosChange              = viewModel::onMesDosChange,
+        onMesTresChange             = viewModel::onMesTresChange,
+        onGuardar                   = viewModel::guardarPolitica,
+        onCerrarFormulario          = viewModel::cerrarFormulario,
+        navigateToScan              = navigateToScan,
+        navigateToHistorial         = navigateToHistorial,
+        navigateToCanje             = navigateToCanje,
+        navigateToConfig            = navigateToConfig
+    )
 }

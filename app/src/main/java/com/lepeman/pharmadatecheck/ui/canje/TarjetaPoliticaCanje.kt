@@ -18,11 +18,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.lepeman.pharmadatecheck.R
 import com.lepeman.pharmadatecheck.data.local.entities.PoliticaCanje
 import com.lepeman.pharmadatecheck.ui.theme.ColorBorde
 import com.lepeman.pharmadatecheck.ui.theme.ColorCanjeable
@@ -49,6 +51,8 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun TarjetaPoliticaCanje(
     politica: PoliticaCanje,
+    nombreLaboratorio: String,
+    nombreEmpresa: String,
     onEditar: () -> Unit,
     onEliminar: () -> Unit
 ) {
@@ -68,7 +72,7 @@ fun TarjetaPoliticaCanje(
                 verticalAlignment     = Alignment.CenterVertically
             ) {
                 Text(
-                    text       = "Laboratorio #${politica.laboratorioId}",
+                    text       = nombreLaboratorio,
                     color      = ColorTexto,
                     fontWeight = FontWeight.Bold,
                     fontSize   = 14.sp,
@@ -110,7 +114,7 @@ fun TarjetaPoliticaCanje(
                     fontFamily = FontFamily.Monospace
                 )
                 Text(
-                    text       = if (politica.vencimiento) "Activo" else "Inactivo",
+                    text       = if (politica.vencimiento) stringResource(R.string.vencimiento_si) else stringResource(R.string.vencimiento_no),
                     color      = if (politica.vencimiento) ColorVigente else ColorDim,
                     fontSize   = 12.sp,
                     fontFamily = FontFamily.Monospace,
@@ -162,6 +166,8 @@ fun TarjetaPoliticaCanjePreview() {
                     mesDos       = LocalDate.of(2026, 5, 1),
                     mesTres      = LocalDate.of(2026, 6, 1)
                 ),
+                nombreLaboratorio = "ANDROMACO",
+                nombreEmpresa = "ANDROMACO S.A.",
                 onEditar   = {},
                 onEliminar = {}
             )
@@ -177,6 +183,8 @@ fun TarjetaPoliticaCanjePreview() {
                     mesDos       = null,
                     mesTres      = null
                 ),
+                nombreLaboratorio = "SAVAL",
+                nombreEmpresa = "SAVAL S.A.",
                 onEditar   = {},
                 onEliminar = {}
             )
