@@ -40,3 +40,5 @@ google-services.json
 *.hprof
 # IDE
 .idea/
+# IDE
+.idea/
