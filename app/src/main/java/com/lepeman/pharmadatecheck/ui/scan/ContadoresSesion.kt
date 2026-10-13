@@ -108,7 +108,7 @@ fun ContadoresSesionPreview() {
                 .fillMaxWidth()
         ) {
             ContadoresSesion(
-                nombreOperador = "Luis Andrés Ortega Lepe",
+                nombreOperador = "Usuario Demo",
                 vigentes       = 12,
                 canjeables     = 5,
                 vencidos       = 2,

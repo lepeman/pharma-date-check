@@ -197,7 +197,7 @@ fun DialogInicioSesionPreview() {
     PharmaDateCheckTheme {
         Box(modifier = Modifier.padding(16.dp)) {
             DialogInicioSesion(
-                operadorInput    = "151748309",
+                operadorInput    = "111111111",
                 onOperadorChange = {},
                 onConfirmar      = {}
             )

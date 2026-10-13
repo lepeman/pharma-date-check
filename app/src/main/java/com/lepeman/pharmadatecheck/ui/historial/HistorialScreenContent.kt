@@ -104,7 +104,7 @@ fun HistorialScreenContentPreview() {
         totalVencidos   = 2
     )
     val listaSesionConNombre = listOf(
-        HistorialViewModel.SesionConNombre(sesion, "Luis Ortega")
+        HistorialViewModel.SesionConNombre(sesion, "Usuario Demo")
     )
     PharmaDateCheckTheme {
         HistorialScreenContent(

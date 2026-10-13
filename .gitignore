@@ -38,3 +38,5 @@ google-services.json
 
 # Configuración de emuladores
 *.hprof
+# IDE
+.idea/

@@ -162,7 +162,7 @@ abstract class AppDatabase : RoomDatabase() {
                     Auxiliar(id = 6, nombreAuxiliar = "Elena Morales",  rutAuxiliar = "172234456"),
                     Auxiliar(id = 7, nombreAuxiliar = "Pedro Soto",     rutAuxiliar = "98765432"),
                     Auxiliar(id = 8, nombreAuxiliar = "Lucía Herrera",  rutAuxiliar = "201123341"),
-                    Auxiliar(id = 9, nombreAuxiliar = "Luis Ortega",    rutAuxiliar = "151748309")
+                    Auxiliar(id = 9, nombreAuxiliar = "Usuario Demo",    rutAuxiliar = "111111111")
                 ))
             }
         }

@@ -194,11 +194,11 @@ fun ScanScreenContent(
 @Composable
 fun ScanScreenContentPreview() {
 
-    val activa = ScanViewModel.SesionUiState.Activa("Luis Ortega")
+    val activa = ScanViewModel.SesionUiState.Activa("Usuario Demo")
 
     PharmaDateCheckTheme {
         ScanScreenContent(
-            auxiliarSesion        = "Luis Andrés Ortega Lepe",
+            auxiliarSesion        = "Usuario Demo",
             scanSelected          = true,
             scanUiState           = ScanUiState.Idle,
             sesionUiState         = activa,
@@ -245,10 +245,10 @@ fun ScanScreenContentResultadoPreview() {
 
     PharmaDateCheckTheme {
         ScanScreenContent(
-            auxiliarSesion        = "Luis Andrés Ortega Lepe",
+            auxiliarSesion        = "Usuario Demo",
             scanSelected          = true,
             scanUiState           = uiState,
-            sesionUiState         = ScanViewModel.SesionUiState.Activa("Luis Ortega"),
+            sesionUiState         = ScanViewModel.SesionUiState.Activa("Usuario Demo"),
             sesionActivaId        = 1,
             ean13Pendiente        = null,
             totalVigentes         = 12,

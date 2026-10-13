@@ -14,14 +14,14 @@
 
 ## Descripción
 
-**PharmaDateCheck** es una aplicación móvil nativa para Android desarrollada en Kotlin como proyecto de Practica Profesional del programa de Ingeniería informática del Instituto Profesional IACC.
+**PharmaDateCheck** es una aplicación móvil nativa para Android desarrollada en Kotlin como proyecto de Práctica Profesional del programa de Ingeniería Informática del Instituto Profesional IACC.
 
-La aplicación automatiza el proceso de revisión, clasificación y gestión de medicamentos según su fecha de vencimiento y las políticas de canje vigentes de cada laboratorios, optimizando la eficiencia operacional del área de farmacia de la sucursal CV105 de farmacias Cruz Verde, ubicada en Rengo 601, Concepción, Chile.
+La aplicación automatiza el proceso de revisión, clasificación y gestión de medicamentos según su fecha de vencimiento y las políticas de canje vigentes de cada laboratorio, optimizando la eficiencia operacional del área de farmacia de la sucursal CV105 de farmacias Cruz Verde, ubicada en Rengo 601, Concepción, Chile.
 
 El sistema clasifica cada medicamento escaneado en tres estados:
 
 - ✅ **VIGENTE** — el producto se encuentra dentro de su periodo de validez
-- ⚠️ **CANJEABLE** — El producto está p´roximo a vencer y es elegible para canje según la política del laboratorio
+- ⚠️ **CANJEABLE** — El producto está próximo a vencer y es elegible para canje según la política del laboratorio
 - ❌ **VENCIDO** — El producto ha superado su fecha de vencimiento y debe ser retirado del inventario
 
 ---
@@ -75,11 +75,15 @@ app/src/main/java/com/lepeman/pharmadatecheck/
 │
 ├── DateCheckApplication.kt # Contenedor de dependencias
 └── MainActivity.kt         # Punto de entrada, interceptación HID
+
+app/src/test/java/com/lepeman/pharmadatecheck/
+└── domain/
+    └── ClasificadorProductoTest.kt   # Pruebas unitarias del motor de clasificación
 ```
 
 ---
 
-## Modelo de dato
+## Modelo de datos
 
 El modelo cuenta con 7 entidades Room relacionadas mediante claves foráneas:
 
@@ -109,6 +113,32 @@ Empresa ────────────────────────
    → Producto vencido con política activa: VENCIDO
 5. Resultado registrado en base de datos local
 6. Cierre de sesión con totales persistidos
+```
+
+---
+
+## Cómo ejecutarlo
+
+**Requisitos:** Android Studio (versión reciente), JDK 17 y un dispositivo o emulador con Android 8.0 (API 26) o superior.
+
+1. Clonar el repositorio:
+   ```bash
+   git clone https://github.com/lepeman/pharma-date-check.git
+   ```
+2. Abrir la carpeta en Android Studio y esperar la sincronización de Gradle.
+3. Ejecutar la configuración `app` en un dispositivo o emulador.
+
+Al primer arranque la base de datos se prepuebla con laboratorios, empresas y auxiliares de demostración.
+Para iniciar sesión de prueba, usar el RUT ficticio `11.111.111-1` (se ingresa como `111111111`).
+
+---
+
+## Pruebas
+
+Las pruebas unitarias del motor de clasificación (`ClasificadorProducto`) cubren los cuatro escenarios de clasificación, los límites de fecha, los tres meses del período de canje y el cálculo de días restantes. Se ejecutan con:
+
+```bash
+./gradlew test
 ```
 
 ---
@@ -154,3 +184,9 @@ El proyecto siguió la metodología **Scrum** con 4 Sprints de una semana cada u
 Este proyecto fue desarrollado con fines exclusivamente académicos en el marco de la Práctica Profesional del programa de Ingeniería Informática del Instituto Profesional IACC. No está autorizada su reproducción, distribución ni uso comercial sin autorización expresa del autor.
 
 © 2026 Luis Andrés Ortega Lepe. Todos los derechos reservados.
+
+---
+
+## Licencia
+
+Proyecto desarrollado con fines académicos. No incluye una licencia de código abierto; todos los derechos quedan reservados al autor.
